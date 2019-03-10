@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2003
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jeopardivity.Functions", "Jeopardivity.Functions\Jeopardivity.Functions.csproj", "{ABFFAC1C-2E94-43C9-82D6-50F56A1A77EE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABFFAC1C-2E94-43C9-82D6-50F56A1A77EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABFFAC1C-2E94-43C9-82D6-50F56A1A77EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABFFAC1C-2E94-43C9-82D6-50F56A1A77EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABFFAC1C-2E94-43C9-82D6-50F56A1A77EE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {074CD3AC-2633-40EE-8222-792EEA8FE769}
+	EndGlobalSection
+EndGlobal
