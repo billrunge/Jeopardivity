@@ -13,6 +13,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="buzzer.html" />
+    <Content Include="Scripts\buzzer.js" />
     <Content Include="Scripts\createuser.js" />
     <Content Include="Scripts\scrolling-nav.js" />
     <Content Include="index.html" />
