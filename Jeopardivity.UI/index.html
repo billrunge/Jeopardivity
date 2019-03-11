@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="A buzzer system for playing Jeopardy at work.">
+    <meta name="author" content="Bill Runge">
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="Content/bootstrap.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="Content/Site.css" rel="stylesheet" />
+    <title>Jeopardivity</title>
+</head>
+<body>
+    <div class="container">
+
+        <h1>Welcome to Jeopardivity!</h1>
+        <form>
+            <div class="form-group">
+                <label for="UserName">User Name</label>
+                <input type="text" class="form-control" id="UserName" aria-describedby="UserNameHelp" placeholder="Please enter User Name">
+                <small id="UserNameHelp" class="form-text text-muted">Enter a name up to 25 characters long.</small>
+            </div>
+            <div class="form-group">
+                <label for="GameCode">Game Code</label>
+                <input type="text" class="form-control" id="GameCode" aria-describedby="GameCodeHelp" placeholder="Please enter Game Code">
+                <small id="GameCodeHelp" class="form-text text-muted">The game's Alex will provide the room code.</small>
+            </div>
+            <button type="submit" class="btn btn-primary" id="SubmitButton">Submit</button>
+        </form>
+    </div>
+
+    <script src="Scripts/jquery-3.3.1.js"></script>
+    <script src="Scripts/bootstrap.js"></script>
+    <script src="Scripts/createuser.js"></script>
+
+</body>
+
+</html>
+

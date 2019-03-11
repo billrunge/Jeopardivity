@@ -24,10 +24,9 @@ namespace Jeopardivity.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             int user = data.User;
-            int game = data.Game;
             int question = data.Question;
 
-            await BuzzAsync(user, game, question);
+            await BuzzAsync(user, question);
 
             var returnObject = new { Winner = await IsUserWinner(user, question) };
 
@@ -36,7 +35,7 @@ namespace Jeopardivity.Functions
             //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
 
-        public static async Task BuzzAsync(int user, int game, int question)
+        public static async Task BuzzAsync(int user, int question)
         {
             using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
             {
@@ -45,22 +44,19 @@ namespace Jeopardivity.Functions
                         IF NOT EXISTS (SELECT TOP 1 [User] 
                                        FROM   [Buzz] 
                                        WHERE  [User] = @User 
-                                              AND [Game] = @Game) 
+                                              AND [Question] = @Question) 
                           BEGIN 
                               INSERT INTO [Buzz] 
                                           ([User], 
-                                           [Game], 
                                            [Buzzed], 
                                            [Question]) 
                               VALUES      (@User, 
-                                           @Game, 
                                            Getutcdate(), 
                                            @Question)
                           END";
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });
                 command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
 
                 await command.ExecuteNonQueryAsync();
