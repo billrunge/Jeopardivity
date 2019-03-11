@@ -3,6 +3,7 @@
     let userName;
     let game = 0;
     let user = 0;
+    let jwt;
 
     $("#SubmitButton").click(function (e) {
 
@@ -31,16 +32,30 @@
                         data: '{"Game":"' + game + '", "Name":"' + userName + '"}',
                         dataType: "json",
                         success: function (msg) {
-                            console.log(msg);
                             user = msg.User;
-                            $(location).attr('href', './buzzer.html?User=' + user)
+
+                            $.ajax({
+                                type: "POST",
+                                url: "http://localhost:7071/api/CreateJWT",
+                                contentType: "application/json; charset=utf-8",
+                                data: '{"User":"' + user + '"}',
+                                dataType: "json",
+                                success: function (msg) {
+                                    jwt = msg.JWT;
+                                    localStorage.JWT = jwt;
+                                    $(location).attr('href', './buzzer.html');
+                                },
+                                error: function (req, status, error) {
+                                    $("h1").html('<error-text>Unabled to generate JWT</error-text>');
+                                    return false;
+                                }
+                            });
                         },
                         error: function (req, status, error) {
                             $("h1").html('<error-text>Something bad has happened.</error-text>');
                             return false;
                         }
                     });
-
                 }
             },
             error: function (req, status, error) {
