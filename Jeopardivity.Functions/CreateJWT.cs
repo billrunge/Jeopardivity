@@ -25,15 +25,18 @@ namespace Jeopardivity.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             int user = data.User;
+            int game = data.Game;
+            string userName = data.UserName;
+            bool isAlex = data.IsAlex;
 
-            var returnObject = new { JWT = await GenerateJwtAsync(user) };
+            var returnObject = new { JWT = await GenerateJwtAsync(user, game, userName, isAlex) };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
                 //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
 
 
-        private static async Task<string> GenerateJwtAsync(int user)
+        private static async Task<string> GenerateJwtAsync(int user, int game, string userName, bool isAlex)
         {
             SymmetricSecurityKey securityKey = 
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")));
@@ -45,7 +48,10 @@ namespace Jeopardivity.Functions
 
             JwtPayload payload = new JwtPayload
            {
-               { "User", user}
+               { "User", user},
+                {"UserName", userName },
+                {"Game", game },
+                {"IsAlex", isAlex }
            };
 
             JwtSecurityToken secToken = new JwtSecurityToken(header, payload);

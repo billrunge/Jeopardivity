@@ -20,12 +20,12 @@ namespace Jeopardivity.Functions
             ILogger log)
         {
 
-            var returnObject = new { GameCode = await CreateGameAsync() };
+            var returnObject = new { Game = await CreateGameAsync() };
 
             return new OkObjectResult(JsonConvert.SerializeObject(returnObject));
         }
 
-        private static async Task<string> CreateGameAsync()
+        private static async Task<int> CreateGameAsync()
         {
             string gameCode = GenerateGameCode(5);
             using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
@@ -36,14 +36,17 @@ namespace Jeopardivity.Functions
                                     ([GameCode], 
                                      [Created]) 
                         VALUES      (@GameCode, 
-                                     Getutcdate())";
+                                     Getutcdate())
+
+                        SELECT CAST(SCOPE_IDENTITY() AS INT)";
                 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.Add(new SqlParameter { ParameterName = "@GameCode", SqlDbType = SqlDbType.NVarChar, Value = gameCode });
 
-                await command.ExecuteNonQueryAsync();
+                return (int)await command.ExecuteScalarAsync();
+
             }
-            return gameCode;
+
         }
 
         private static string GenerateGameCode(int size)

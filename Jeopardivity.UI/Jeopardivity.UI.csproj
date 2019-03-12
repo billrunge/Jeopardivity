@@ -5,6 +5,8 @@
     <ProjectGuid>{4C1CDE14-C049-41E3-998E-0484F23F6C6D}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="creategame.html" />
+    <Content Include="alex.html" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
@@ -14,7 +16,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="buzzer.html" />
+    <Content Include="Scripts\alex.js" />
     <Content Include="Scripts\buzzer.js" />
+    <Content Include="Scripts\creategame.js" />
     <Content Include="Scripts\createuser.js" />
     <Content Include="Scripts\scrolling-nav.js" />
     <Content Include="index.html" />

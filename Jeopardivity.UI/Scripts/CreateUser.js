@@ -3,6 +3,7 @@
     let userName;
     let game = 0;
     let user = 0;
+    let isAlex;
     let jwt;
 
     $("#SubmitButton").click(function (e) {
@@ -29,7 +30,7 @@
                         type: "POST",
                         url: "http://localhost:7071/api/CreateUser",
                         contentType: "application/json; charset=utf-8",
-                        data: '{"Game":"' + game + '", "Name":"' + userName + '"}',
+                        data: '{"Game":"' + game + '", "Name":"' + userName + '", "IsAlex":"' + false +'" }',
                         dataType: "json",
                         success: function (msg) {
                             user = msg.User;
@@ -38,7 +39,7 @@
                                 type: "POST",
                                 url: "http://localhost:7071/api/CreateJWT",
                                 contentType: "application/json; charset=utf-8",
-                                data: '{"User":"' + user + '"}',
+                                data: '{"User":"' + user + '", "Game":"' + game + '", "UserName":"' + userName + '", "IsAlex":"' + false +'" }',
                                 dataType: "json",
                                 success: function (msg) {
                                     jwt = msg.JWT;

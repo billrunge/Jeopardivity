@@ -28,11 +28,11 @@ namespace Jeopardivity.Functions
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             string jwt = data.JWT;
             long user = await GetUserFromJwtAsync(jwt);
-            int game = await GetGameFromApiAsync(user);
-            log.LogInformation("Game = " + game);
+            int game = (int)await GetGameFromJwtAsync(jwt);
+            string userName = await GetUserNameFromJwtAsync(jwt);
+            bool isAlex = await GetIsAlexFromJwtAsync(jwt);
             string gameCode = await GetGameCodeFromApiAsync(game);
-            log.LogInformation("GameCode = " + gameCode);
-            string userName = await GetUserNameFromApiAsync(user);
+
             QuestionStatus questionStatus = await GetQuestionStatusFromApiAsync(game);
 
             var returnObject = new
@@ -42,7 +42,8 @@ namespace Jeopardivity.Functions
                 Game = game,
                 GameCode = gameCode,
                 CurrentQuestion = questionStatus.currentQuestion,
-                QuestionCount = questionStatus.questionCount
+                QuestionCount = questionStatus.questionCount,
+                IsAlex = isAlex
             };
 
             return new OkObjectResult(JsonConvert.SerializeObject(returnObject));
@@ -50,33 +51,33 @@ namespace Jeopardivity.Functions
         }
 
 
-        private static async Task<string> GetUserNameFromApiAsync(long user)
-        {
-            string payload = @" {'User':" + user + "}";
+        //private static async Task<string> GetUserNameFromApiAsync(long user)
+        //{
+        //    string payload = @" {'User':" + user + "}";
 
-            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+        //    StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetNameFromUser", content);
+        //    HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetNameFromUser", content);
 
-            string responseString = await response.Content.ReadAsStringAsync();
-            dynamic data = JsonConvert.DeserializeObject(responseString);
+        //    string responseString = await response.Content.ReadAsStringAsync();
+        //    dynamic data = JsonConvert.DeserializeObject(responseString);
 
-            return data.Name;
-        }
+        //    return data.Name;
+        //}
 
-        private static async Task<int> GetGameFromApiAsync(long user)
-        {
-            string payload = @" {'User':" + user + "}";
+        //private static async Task<int> GetGameFromApiAsync(long user)
+        //{
+        //    string payload = @" {'User':" + user + "}";
 
-            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+        //    StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetGameFromUser", content);
+        //    HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetGameFromUser", content);
 
-            string responseString = await response.Content.ReadAsStringAsync();
-            dynamic data = JsonConvert.DeserializeObject(responseString);
+        //    string responseString = await response.Content.ReadAsStringAsync();
+        //    dynamic data = JsonConvert.DeserializeObject(responseString);
 
-            return data.Game;
-        }
+        //    return data.Game;
+        //}
 
 
         private static async Task<string> GetGameCodeFromApiAsync(int game)
@@ -119,6 +120,31 @@ namespace Jeopardivity.Functions
 
             return (long)token.Payload["User"];
         }
+
+        private static async Task<long> GetGameFromJwtAsync(string jwt)
+        {
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            JwtSecurityToken token = handler.ReadJwtToken(jwt);
+
+            return (long)token.Payload["Game"];
+        }
+
+        private static async Task<bool> GetIsAlexFromJwtAsync(string jwt)
+        {
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            JwtSecurityToken token = handler.ReadJwtToken(jwt);
+
+            return (bool)token.Payload["IsAlex"];
+        }
+
+        private static async Task<string> GetUserNameFromJwtAsync(string jwt)
+        {
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            JwtSecurityToken token = handler.ReadJwtToken(jwt);
+
+            return (string)token.Payload["UserName"];
+        }
+
 
         public struct QuestionStatus
         {

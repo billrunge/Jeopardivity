@@ -26,14 +26,15 @@ namespace Jeopardivity.Functions
 
             string name = data.Name;
             int game = data.Game;
-            int user = await CreateUserAsync(name, game);
+            bool isAlex = data.IsAlex;
+            int user = await CreateUserAsync(name, game, isAlex);
             var returnObject = new { User = user };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
 /*                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");*/
         }
 
-        private static async Task<int> CreateUserAsync(string name, int game)
+        private static async Task<int> CreateUserAsync(string name, int game, bool isAlex)
         {
             using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
             {
@@ -41,15 +42,18 @@ namespace Jeopardivity.Functions
                 string sql = @"
                         INSERT INTO [User] 
                                     ([Name], 
-                                     [Game]) 
+                                     [Game],
+                                     [IsAlex]) 
                         VALUES      (@Name, 
-                                     @Game)
+                                     @Game,
+                                     @IsAlex)
 
                         SELECT CAST(SCOPE_IDENTITY() AS INT)";
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.Add(new SqlParameter { ParameterName = "@Name", SqlDbType = SqlDbType.NVarChar, Value = name });
                 command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });
+                command.Parameters.Add(new SqlParameter { ParameterName = "@IsAlex", SqlDbType = SqlDbType.Bit, Value = isAlex });
 
                 return (int)await command.ExecuteScalarAsync();
             }

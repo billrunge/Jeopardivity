@@ -15,15 +15,19 @@
 </head>
 <body>
     <div class="container">
-        <h1></h1>
-        <h2></h2>
-        <h3></h3>
-        <button type="submit" class="btn btn-primary" id="Buzz">BUZZ</button>
+        <form>
+            <div class="form-group">
+                <label for="UserName">User Name</label>
+                <input type="text" class="form-control" id="UserName" aria-describedby="UserNameHelp" placeholder="Please enter User Name">
+                <small id="UserNameHelp" class="form-text text-muted">Enter a name up to 25 characters long.</small>
+            </div>
+            <button type="submit" class="btn btn-primary" id="SubmitButton">Submit</button>
+        </form>
     </div>
 
     <script src="Scripts/jquery-3.3.1.js"></script>
     <script src="Scripts/bootstrap.js"></script>
-    <script src="Scripts/buzzer.js"></script>
+    <script src="Scripts/creategame.js"></script>
 
 </body>
 
