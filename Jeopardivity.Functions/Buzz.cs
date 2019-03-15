@@ -9,11 +9,15 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Data;
+using System.Net.Http;
+using System.Text;
 
 namespace Jeopardivity.Functions
 {
     public static class Buzz
     {
+        private static readonly HttpClient _client = new HttpClient();
+
         [FunctionName("Buzz")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
@@ -94,6 +98,22 @@ namespace Jeopardivity.Functions
                 return (winningUser == user) ? true : false;
             }
 
+        }
+
+
+
+        private static async Task<string> GetGameCodeFromApiAsync(int game)
+        {
+            string payload = @" {'Game':" + game + "}";
+
+            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetCodeFromGame", content);
+
+            string responseString = await response.Content.ReadAsStringAsync();
+            dynamic data = JsonConvert.DeserializeObject(responseString);
+
+            return data.gameCode;
         }
 
 

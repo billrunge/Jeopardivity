@@ -14,6 +14,7 @@ $(document).ready(function () {
     let jwt;
     let gameCode;
     let user;
+    let game;
     let userName;
     let currentQuestion;
     let questionCount;
@@ -25,37 +26,10 @@ $(document).ready(function () {
         jwt = localStorage.JWT;
     }
 
-    $.ajax({
-        type: "POST",
-        url: baseUrl + "/api/GetUserStatusFromJWT",
-        contentType: "application/json; charset=utf-8",
-        data: '{"JWT":"' + jwt + '"}',
-        dataType: "json",
-        success: function (msg) {
-            user = msg.User;
-            gameCode = msg.GameCode;
-            userName = msg.UserName;
-            currentQuestion = msg.CurrentQuestion;
-            questionCount = msg.QuestionCount;
-
-            $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
-            $("h2").html('Game Code: ' + gameCode + '');
-            $("h3").html('Question Count: ' + questionCount + '');
-        },
-        error: function (req, status, error) {
-            $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
-            return false;
-        }
-    });
+    resetStatus(connectionOns);
 
     $("#Buzz").click(function (e) {
-
-        if (currentQuestion < 1) {
-            $("h1").html('<error-text>This game has not begun. Please be patient.</error-text>');
-
-        } else {
             buzz();
-        }
     });
 
     function buzz() {
@@ -67,14 +41,7 @@ $(document).ready(function () {
             data: '{"User":"' + user + '", "Question":"' + currentQuestion + '" }',
             dataType: "json",
             success: function (msg) {
-                winner = msg.Winner;
-                if (winner) {
 
-                    $("h3").html("<error-text>It's your guess.</error-text>");
-
-                } else {
-                    $("#Buzz").prop("disabled", true);
-                }
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
@@ -82,6 +49,61 @@ $(document).ready(function () {
             }
         });
 
+    }
+
+    function resetStatus(callback) {
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/api/GetUserStatusFromJWT",
+            contentType: "application/json; charset=utf-8",
+            data: '{"JWT":"' + jwt + '"}',
+            dataType: "json",
+            success: function (msg) {
+                user = msg.User;
+                gameCode = msg.GameCode;
+                userName = msg.UserName;
+                game = msg.Game;
+                currentQuestion = msg.CurrentQuestion;
+                questionCount = msg.QuestionCount;
+
+                $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
+                $("h2").html('Game Code: ' + gameCode + '');
+                $("h3").html('Question Count: ' + questionCount + '');
+
+                if (currentQuestion < 1) {
+                    $("#Buzz").prop("disabled", true);
+                } else {
+                    $("#Buzz").prop("disabled", false);
+                }
+
+                if (typeof callback === "function") {
+                    // Call it, since we have confirmed it is callable
+                    callback();
+                }
+
+            },
+            error: function (req, status, error) {
+                $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
+            }
+        });
+    }
+
+    function connectionOns() {
+        connection.on("User" + user, (message) => {
+
+            if (message == "Winner") {
+                $("body").css("background-color", "red");
+
+            }
+
+        });
+
+        connection.on("Game" + game, (message) => {
+            if (message == "NewQuestion") {
+                resetStatus();
+            }
+
+        });
     }
 
 
