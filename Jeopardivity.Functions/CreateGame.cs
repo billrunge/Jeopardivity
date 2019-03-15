@@ -39,7 +39,7 @@ namespace Jeopardivity.Functions
                                      Getutcdate())
 
                         SELECT CAST(SCOPE_IDENTITY() AS INT)";
-                
+
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.Add(new SqlParameter { ParameterName = "@GameCode", SqlDbType = SqlDbType.NVarChar, Value = gameCode });
 

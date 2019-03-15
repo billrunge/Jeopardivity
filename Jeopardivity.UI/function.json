@@ -1,0 +1,7 @@
+{
+  "type": "signalRConnectionInfo",
+  "name": "connectionInfo",
+  "hubName": "chat",
+  "connectionStringSetting": "Endpoint=https://jeopardivity.service.signalr.net;AccessKey=a2P/+rTV0nToEFIBKXY2lQwAjiCDpa3eeq2GpRaxLRg=;Version=1.0;",
+  "direction": "in"
+}

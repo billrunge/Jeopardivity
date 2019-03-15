@@ -1,4 +1,15 @@
-﻿$(document).ready(function () {
+﻿const baseUrl = "http://localhost:7071";
+
+$(document).ready(function () {
+
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl(baseUrl + "/api")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    connection.start().then(function () {
+        console.log("connected");
+    });
 
     let jwt;
     let gameCode;
@@ -16,7 +27,7 @@
 
     $.ajax({
         type: "POST",
-        url: "http://localhost:7071/api/GetUserStatusFromJWT",
+        url: baseUrl + "/api/GetUserStatusFromJWT",
         contentType: "application/json; charset=utf-8",
         data: '{"JWT":"' + jwt + '"}',
         dataType: "json",
@@ -43,30 +54,35 @@
             $("h1").html('<error-text>This game has not begun. Please be patient.</error-text>');
 
         } else {
-
-            $.ajax({
-                type: "POST",
-                url: "http://localhost:7071/api/Buzz",
-                contentType: "application/json; charset=utf-8",
-                data: '{"User":"' + user + '", "Question":"' + currentQuestion + '" }',
-                dataType: "json",
-                success: function (msg) {
-                    winner = msg.Winner;
-                    if (winner) {
-
-                        $("h3").html("<error-text>It's your guess.</error-text>");
-
-                    } else {
-                        $("#Buzz").prop("disabled", true);
-                    }
-                },
-                error: function (req, status, error) {
-                    $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
-                    return false;
-                }
-            });
+            buzz();
         }
     });
+
+    function buzz() {
+
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/api/Buzz",
+            contentType: "application/json; charset=utf-8",
+            data: '{"User":"' + user + '", "Question":"' + currentQuestion + '" }',
+            dataType: "json",
+            success: function (msg) {
+                winner = msg.Winner;
+                if (winner) {
+
+                    $("h3").html("<error-text>It's your guess.</error-text>");
+
+                } else {
+                    $("#Buzz").prop("disabled", true);
+                }
+            },
+            error: function (req, status, error) {
+                $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
+                return false;
+            }
+        });
+
+    }
 
 
 });

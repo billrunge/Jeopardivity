@@ -92,9 +92,13 @@ namespace Jeopardivity.Functions
                 int winningUser = (int)await command.ExecuteScalarAsync();
 
                 return (winningUser == user) ? true : false;
-            }    
+            }
 
         }
+
+
+
+
 
     }
 }
