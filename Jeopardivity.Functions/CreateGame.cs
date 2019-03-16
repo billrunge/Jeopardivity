@@ -33,10 +33,8 @@ namespace Jeopardivity.Functions
                 await connection.OpenAsync();
                 string sql = @"
                         INSERT INTO [Game] 
-                                    ([GameCode], 
-                                     [Created]) 
-                        VALUES      (@GameCode, 
-                                     Getutcdate())
+                                    ([GameCode]) 
+                        VALUES      (@GameCode)
 
                         SELECT CAST(SCOPE_IDENTITY() AS INT)";
 

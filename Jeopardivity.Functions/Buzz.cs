@@ -32,7 +32,7 @@ namespace Jeopardivity.Functions
 
             await BuzzAsync(user, question);
 
-            var returnObject = new { Winner = await IsUserWinner(user, question) };
+            var returnObject = new { Success = true };
 
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
@@ -51,11 +51,9 @@ namespace Jeopardivity.Functions
                                               AND [Question] = @Question) 
                           BEGIN 
                               INSERT INTO [Buzz] 
-                                          ([User], 
-                                           [Buzzed], 
+                                          ([User],  
                                            [Question]) 
                               VALUES      (@User, 
-                                           Getutcdate(), 
                                            @Question)
                           END";
 
@@ -67,59 +65,54 @@ namespace Jeopardivity.Functions
             }
         }
 
-        public static async Task<bool> IsUserWinner(int user, int question)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        DECLARE @User int = (SELECT TOP 1 [User] 
-                           FROM   [Buzz] B 
-                                  INNER JOIN [Question] Q 
-                                          ON B.[Question] = Q.[Question] 
-                           WHERE  Q.[Ended] IS NOT NULL 
-                                  AND [Buzzed] > [Ended] 
-                                  AND B.[Question] = @Question 
-                           ORDER  BY [Buzzed] ASC) 
+        //public static async Task<bool> IsUserWinner(int user, int question)
+        //{
+        //    using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
+        //    {
+        //        await connection.OpenAsync();
+        //        string sql = @"
+        //                DECLARE @User int = (SELECT TOP 1 [User] 
+        //                   FROM   [Buzz] B 
+        //                          INNER JOIN [Question] Q 
+        //                                  ON B.[Question] = Q.[Question] 
+        //                   WHERE  Q.[Ended] IS NOT NULL 
+        //                          AND [Buzzed] > [Ended] 
+        //                          AND B.[Question] = @Question 
+        //                   ORDER  BY [Buzzed] ASC) 
 
-                        IF ( @User IS NULL ) 
-                          BEGIN 
-                              SET @User = 0 
-                          END 
+        //                IF ( @User IS NULL ) 
+        //                  BEGIN 
+        //                      SET @User = 0 
+        //                  END 
 
-                        SELECT @User";
-
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
-
-                int winningUser = (int)await command.ExecuteScalarAsync();
-
-                return (winningUser == user) ? true : false;
-            }
-
-        }
+        //                SELECT @User";
 
 
+        //        SqlCommand command = new SqlCommand(sql, connection);
+        //        command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
 
-        private static async Task<string> GetGameCodeFromApiAsync(int game)
-        {
-            string payload = @" {'Game':" + game + "}";
+        //        int winningUser = (int)await command.ExecuteScalarAsync();
 
-            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+        //        return (winningUser == user) ? true : false;
+        //    }
 
-            HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetCodeFromGame", content);
-
-            string responseString = await response.Content.ReadAsStringAsync();
-            dynamic data = JsonConvert.DeserializeObject(responseString);
-
-            return data.gameCode;
-        }
+        //}
 
 
 
+        //private static async Task<string> GetGameCodeFromApiAsync(int game)
+        //{
+        //    string payload = @" {'Game':" + game + "}";
 
+        //    StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
+        //    HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetCodeFromGame", content);
+
+        //    string responseString = await response.Content.ReadAsStringAsync();
+        //    dynamic data = JsonConvert.DeserializeObject(responseString);
+
+        //    return data.gameCode;
+        //}
     }
 }
 

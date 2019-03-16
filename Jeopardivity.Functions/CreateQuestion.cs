@@ -44,11 +44,9 @@ namespace Jeopardivity.Functions
                 string sql = @"
                         INSERT INTO [Question] 
                                     ([Game], 
-                                     [Started], 
-                                     [Ended]) 
+                                     [Answerable]) 
                         VALUES      (@Game, 
-                                     Getutcdate(), 
-                                     NULL)
+                                     0)
 
                         SELECT CAST(SCOPE_IDENTITY() AS INT)";
 

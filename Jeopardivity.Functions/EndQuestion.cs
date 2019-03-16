@@ -40,7 +40,7 @@ namespace Jeopardivity.Functions
                 await connection.OpenAsync();
                 string sql = @"
                         UPDATE [Question] 
-                        SET    [Ended] = Getutcdate() 
+                        SET    [Answerable] = 1 
                         WHERE  [Question] = @Question";
 
                 SqlCommand command = new SqlCommand(sql, connection);

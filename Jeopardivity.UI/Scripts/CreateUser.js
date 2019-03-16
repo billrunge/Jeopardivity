@@ -30,7 +30,7 @@
                         type: "POST",
                         url: "http://localhost:7071/api/CreateUser",
                         contentType: "application/json; charset=utf-8",
-                        data: '{"Game":"' + game + '", "Name":"' + userName + '", "IsAlex":"' + false +'" }',
+                        data: '{"Game":"' + game + '", "Name":"' + userName + '","IsAlex":"' + false +'" }',
                         dataType: "json",
                         success: function (msg) {
                             user = msg.User;
@@ -39,7 +39,7 @@
                                 type: "POST",
                                 url: "http://localhost:7071/api/CreateJWT",
                                 contentType: "application/json; charset=utf-8",
-                                data: '{"User":"' + user + '", "Game":"' + game + '", "UserName":"' + userName + '", "IsAlex":"' + false +'" }',
+                                data: '{"User":"' + user + '", "Game":"' + game + '", "UserName":"' + userName + '", "GameCode":"' + gameCode + '",  "IsAlex":"' + false +'" }',
                                 dataType: "json",
                                 success: function (msg) {
                                     jwt = msg.JWT;

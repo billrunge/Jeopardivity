@@ -1,4 +1,12 @@
 ﻿const baseUrl = "http://localhost:7071";
+let jwt;
+let gameCode;
+let user;
+let game;
+let userName;
+let question;
+let answerable;
+let userBuzzed;
 
 $(document).ready(function () {
 
@@ -11,14 +19,6 @@ $(document).ready(function () {
         console.log("connected");
     });
 
-    let jwt;
-    let gameCode;
-    let user;
-    let game;
-    let userName;
-    let currentQuestion;
-    let questionCount;
-    let winner;
 
     if (localStorage.getItem("JWT") === null) {
         $(location).attr('href', './index.html');
@@ -26,10 +26,15 @@ $(document).ready(function () {
         jwt = localStorage.JWT;
     }
 
+    parseJwt(jwt);
+
+    $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
+    $("h2").html('Game Code: ' + gameCode + '');
+
     resetStatus(connectionOns);
 
     $("#Buzz").click(function (e) {
-            buzz();
+        buzz();
     });
 
     function buzz() {
@@ -38,9 +43,11 @@ $(document).ready(function () {
             type: "POST",
             url: baseUrl + "/api/Buzz",
             contentType: "application/json; charset=utf-8",
-            data: '{"User":"' + user + '", "Question":"' + currentQuestion + '" }',
+            data: '{"User":"' + user + '", "Question":"' + question + '" }',
             dataType: "json",
             success: function (msg) {
+
+                resetStatus();
 
             },
             error: function (req, status, error) {
@@ -54,30 +61,30 @@ $(document).ready(function () {
     function resetStatus(callback) {
         $.ajax({
             type: "POST",
-            url: baseUrl + "/api/GetUserStatusFromJWT",
+            url: baseUrl + "/api/GetQuestionStatusFromUser",
             contentType: "application/json; charset=utf-8",
-            data: '{"JWT":"' + jwt + '"}',
+            data: '{"User":"' + user + '"}',
             dataType: "json",
             success: function (msg) {
-                user = msg.User;
-                gameCode = msg.GameCode;
-                userName = msg.UserName;
-                game = msg.Game;
-                currentQuestion = msg.CurrentQuestion;
-                questionCount = msg.QuestionCount;
 
-                $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
-                $("h2").html('Game Code: ' + gameCode + '');
-                $("h3").html('Question Count: ' + questionCount + '');
+                question = msg.Question;
+                answerable = msg.Answerable;
+                userBuzzed = msg.UserBuzzed;
 
-                if (currentQuestion < 1) {
+                if (question < 1) {
                     $("#Buzz").prop("disabled", true);
-                } else {
+ 
+                }
+
+                if (answerable === true) {
                     $("#Buzz").prop("disabled", false);
                 }
 
+                if (userBuzzed === true) {
+                    $("#Buzz").prop("disabled", true);
+                }
+
                 if (typeof callback === "function") {
-                    // Call it, since we have confirmed it is callable
                     callback();
                 }
 
@@ -106,5 +113,16 @@ $(document).ready(function () {
         });
     }
 
+    function parseJwt(token) {
+
+
+        let json = jwt_decode(token);
+
+        user = json.User;
+        gameCode = json.GameCode;
+        userName = json.UserName;
+        game = json.Game;
+        console.log(json.User);
+    }
 
 });
