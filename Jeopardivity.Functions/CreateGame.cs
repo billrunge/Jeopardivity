@@ -13,21 +13,27 @@ namespace Jeopardivity.Functions
 {
     public static class CreateGame
     {
+        private static int game;
+        private static string gameCode;
+
+
 
         [FunctionName("CreateGame")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
+            GenerateGameCode(5);
+            await CreateGameAsync();
 
-            var returnObject = new { Game = await CreateGameAsync() };
+
+            var returnObject = new { Game = game, GameCode = gameCode };
 
             return new OkObjectResult(JsonConvert.SerializeObject(returnObject));
         }
 
-        private static async Task<int> CreateGameAsync()
+        private static async Task CreateGameAsync()
         {
-            string gameCode = GenerateGameCode(5);
             using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
             {
                 await connection.OpenAsync();
@@ -41,13 +47,12 @@ namespace Jeopardivity.Functions
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.Add(new SqlParameter { ParameterName = "@GameCode", SqlDbType = SqlDbType.NVarChar, Value = gameCode });
 
-                return (int)await command.ExecuteScalarAsync();
+                game = (int)await command.ExecuteScalarAsync();
 
             }
-
         }
 
-        private static string GenerateGameCode(int size)
+        private static void GenerateGameCode(int size)
         {
             Random rand = new Random();
             string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -58,7 +63,7 @@ namespace Jeopardivity.Functions
                 chars[i] = alphabet[rand.Next(alphabet.Length)];
             }
 
-            return new string(chars);
+            gameCode = new string(chars);
         }
     }
 }

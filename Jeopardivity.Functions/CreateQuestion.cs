@@ -9,11 +9,18 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Data;
+using System.Net.Http;
+using System.Text;
 
 namespace Jeopardivity.Functions
 {
     public static class CreateQuestion
     {
+
+        private static readonly HttpClient _client = new HttpClient();
+        private static int game;
+        private static int question;
+
         [FunctionName("CreateQuestion")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
@@ -23,9 +30,9 @@ namespace Jeopardivity.Functions
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            int game = data.Game;
-
-            int question = await CreateQuestionAsync(game);
+            game = data.Game;
+            question = await CreateQuestionAsync(game);
+            await SendMessageAsync();
 
             var returnObject = new { Question = question };
 
@@ -57,5 +64,17 @@ namespace Jeopardivity.Functions
 
             }
         }
+
+        private static async Task SendMessageAsync()
+        {
+            string payload = @" {'UserID':'Game" + game + "', 'Message':'NewQuestion' }";
+
+            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/SendMessage", content);
+
+        }
+
+
     }
 }

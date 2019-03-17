@@ -17,6 +17,11 @@ $(document).ready(function () {
         jwt = localStorage.JWT;
     }
 
+    parseJwt(jwt);
+
+    $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
+    $("h2").html('Game Code: ' + gameCode + '');
+
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(baseUrl + "/api")
         .configureLogging(signalR.LogLevel.Information)
@@ -27,12 +32,13 @@ $(document).ready(function () {
     resetStatus(connectionOns);
 
 
-    $("#EndQuestion").click(function () {
-        endQuestion();       
+    $("#AllowBuzzes").click(function () {
+        makeQuestionAnswerable();
     });
 
 
     $("#NextQuestion").click(function (e) {
+        createQuestion();
         resetStatus();
     });
 
@@ -40,27 +46,31 @@ $(document).ready(function () {
     function resetStatus(callback) {
         $.ajax({
             type: "POST",
-            url: baseUrl + "/api/GetUserStatusFromJWT",
+            url: baseUrl + "/api/GetQuestionStatusFromUser",
             contentType: "application/json; charset=utf-8",
-            data: '{"JWT":"' + jwt + '"}',
+            data: '{"User":"' + user + '"}',
             dataType: "json",
             success: function (msg) {
-                user = msg.User;
-                gameCode = msg.GameCode;
-                game = msg.Game;
-                userName = msg.UserName;
-                currentQuestion = msg.CurrentQuestion;
-                questionCount = msg.QuestionCount;
-                isAlex = msg.IsAlex;
 
-                if (!isAlex) {
-                    $(location).attr('href', './buzzer.html');
+                question = msg.Question;
+                answerable = msg.Answerable;
+                userBuzzed = msg.UserBuzzed;
+
+                if (question < 1) {
+                    createQuestion();
                 }
 
-                $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
-                $("h2").html('Game Code: ' + gameCode + '');
-                $("h3").html('Question Count: ' + questionCount + '');
+                console.log(msg);
 
+                if (answerable === true) {
+                    $("#AllowBuzzes").prop("disabled", true);
+                    $("#NextQuestion").prop("disabled", false);
+                }
+                else {
+                    $("#AllowBuzzes").prop("disabled", false);
+                    $("#NextQuestion").prop("disabled", true);
+
+                }
 
                 if (typeof callback === "function") {
                     // Call it, since we have confirmed it is callable
@@ -69,8 +79,7 @@ $(document).ready(function () {
 
             },
             error: function (req, status, error) {
-                $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
-                return false;
+                $("h1").html('<error-text>Unable to get question status</error-text>');
             }
         });
     }
@@ -82,20 +91,26 @@ $(document).ready(function () {
 
 
 
-
-            $("p").html("<div>" + message + "</div>");
         });
 
-        connection.on("Game" + game, (message) => {
+    }
 
 
-        });
+    function parseJwt(token) {
+
+
+        let json = jwt_decode(token);
+
+        user = json.User;
+        gameCode = json.GameCode;
+        userName = json.UserName;
+        game = json.Game;
+        console.log(json.User);
     }
 
 
 
-
-    function endQuestion() {
+    function createQuestion(callback) {
         $.ajax({
             type: "POST",
             url: baseUrl + "/api/CreateQuestion",
@@ -103,27 +118,35 @@ $(document).ready(function () {
             data: '{"Game":"' + game + '"}',
             dataType: "json",
             success: function (msg) {
-                currentQuestion = msg.Question;
-                $.ajax({
-                    type: "POST",
-                    url: baseUrl + "/api/EndQuestion",
-                    contentType: "application/json; charset=utf-8",
-                    data: '{"Question":"' + (currentQuestion) + '"}',
-                    dataType: "json",
-                    success: function (msg) {
-                        $(this).prop("disabled", true);
+                resetStatus();
+                if (typeof callback === "function") {
+                    // Call it, since we have confirmed it is callable
+                    callback();
+                }
+            },
+            error: function (req, status, error) {
+                $("h1").html('<error-text>Unable to create question</error-text>');
+                return false;
+            }
+        });
+    }
 
-                    },
-                    error: function (req, status, error) {
-                        $("h1").html('<error-text>Unable to begin next question</error-text>');
-                        return false;
-                    }
-                });
+    function makeQuestionAnswerable() {
+
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/api/MakeQuestionAnswerable",
+            contentType: "application/json; charset=utf-8",
+            data: '{"Question":"' + question + '", "Game":"' + game +'"}',
+            dataType: "json",
+            success: function (msg) {
+                resetStatus();
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to begin next question</error-text>');
                 return false;
             }
         });
+
     }
 });

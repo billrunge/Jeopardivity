@@ -51,7 +51,7 @@ $(document).ready(function () {
 
             },
             error: function (req, status, error) {
-                $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
+                $("h1").html('<error-text>Unable to buzz</error-text>');
                 return false;
             }
         });
@@ -72,12 +72,13 @@ $(document).ready(function () {
                 userBuzzed = msg.UserBuzzed;
 
                 if (question < 1) {
-                    $("#Buzz").prop("disabled", true);
- 
+                    $("#Buzz").prop("disabled", true); 
                 }
 
                 if (answerable === true) {
                     $("#Buzz").prop("disabled", false);
+                } else {
+                    $("#Buzz").prop("disabled", true);
                 }
 
                 if (userBuzzed === true) {
@@ -90,23 +91,21 @@ $(document).ready(function () {
 
             },
             error: function (req, status, error) {
-                $("h1").html('<error-text>Unable to get user information from JWT</error-text>');
+                $("h1").html('<error-text>Unable to get question status</error-text>');
             }
         });
     }
 
     function connectionOns() {
-        connection.on("User" + user, (message) => {
-
-            if (message == "Winner") {
-                $("body").css("background-color", "red");
-
-            }
-
-        });
 
         connection.on("Game" + game, (message) => {
+
             if (message == "NewQuestion") {
+                resetStatus();
+            }
+
+            if (message == "Answerable") {
+               
                 resetStatus();
             }
 

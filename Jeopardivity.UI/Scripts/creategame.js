@@ -1,32 +1,36 @@
 ﻿let game;
 let userName;
+let gameCode;
+let baseUrl = "http://localhost:7071";
 
 $(document).ready(function () {
 
-
+    
     $("#SubmitButton").click(function (e) {
 
         userName = $("#UserName").val();
 
-        $.get("http://localhost:7071/api/CreateGame", function (data, status) {
+        $.get(baseUrl + "/api/CreateGame", function (data, status) {
 
             var obj = jQuery.parseJSON(data);
             game = obj.Game;
+            gameCode = obj.GameCode;
+            console.log(gameCode);
 
             $.ajax({
                 type: "POST",
-                url: "http://localhost:7071/api/CreateUser",
+                url: baseUrl + "/api/CreateUser",
                 contentType: "application/json; charset=utf-8",
-                data: '{"Game":"' + game + '", "Name":"' + userName + '", "IsAlex":"' + true + '" }',
+                data: '{"Game":"' + game + '", "Name":"' + userName + '","IsAlex":"' + true + '" }',
                 dataType: "json",
                 success: function (msg) {
                     user = msg.User;
 
                     $.ajax({
                         type: "POST",
-                        url: "http://localhost:7071/api/CreateJWT",
+                        url: baseUrl + "/api/CreateJWT",
                         contentType: "application/json; charset=utf-8",
-                        data: '{"User":"' + user + '", "Game":"' + game + '", "UserName":"' + userName + '", "IsAlex":"' + true +'" }',
+                        data: '{"User":"' + user + '", "Game":"' + game + '", "UserName":"' + userName + '", "GameCode":"' + gameCode + '",  "IsAlex":"' + true + '" }',
                         dataType: "json",
                         success: function (msg) {
                             jwt = msg.JWT;
@@ -35,17 +39,16 @@ $(document).ready(function () {
                         },
                         error: function (req, status, error) {
                             $("h1").html('<error-text>Unabled to generate JWT</error-text>');
-                            return false;
+
                         }
                     });
                 },
                 error: function (req, status, error) {
                     $("h1").html('<error-text>Something bad has happened.</error-text>');
-                    return false;
-                }
-            });
-        });
 
+                }
+            });           
+        });
         return false;
 
     });

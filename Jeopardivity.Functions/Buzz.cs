@@ -113,6 +113,51 @@ namespace Jeopardivity.Functions
 
         //    return data.gameCode;
         //}
+
+
+
+        public static async Task<int> GetAlexFromQuestionAsync(int question)
+        {
+            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
+            {
+                await connection.OpenAsync();
+                string sql = @"
+                        SELECT U.[User] 
+                        FROM   [User] U 
+                               INNER JOIN [Question] Q 
+                                       ON U.[Game] = Q.[Game] 
+                        WHERE  U.[IsAlex] = 1 
+                               AND Q.[Question] = @Question";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
+
+                return (int)await command.ExecuteScalarAsync();
+            }
+
+
+
+
+        }
+
+
+        private static async Task SendMessageAsync(int alex, int user)
+        {
+            string payload = @" {'UserID':'User" + Alex + "', 'Message':'Answerable' }";
+
+            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/SendMessage", content);
+
+        }
+
+
+
     }
+
+
+
+
+
 }
 
