@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Net.Http;
 using System.Text;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -34,32 +35,18 @@ namespace Jeopardivity.Functions
             question = data.Question;
             game = data.Game;
 
-            await MakeQuestionAnswerableAsync(question);
+            var helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
+
+            await helper.MakeQuestionAnswerableAsync(question);
             await SendMessageAsync();
 
             var returnObject = new { Status = "Question is now Answerable" };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
         }
-
-        public static async Task MakeQuestionAnswerableAsync(int question)
-        {
-
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        UPDATE [Question] 
-                        SET    [Answerable] = 1 
-                        WHERE  [Question] = @Question";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
-
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
 
         private static async Task SendMessageAsync()
         {
@@ -68,15 +55,6 @@ namespace Jeopardivity.Functions
             StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
             await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/SendMessage", content);
-
         }
-
-
-
-
-
-
-
-
     }
 }

@@ -186,41 +186,6 @@ namespace Jeopardivity.Libraries
             }
         }
 
-        public async Task<string> GetCodeFromGameAsync(int game)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT TOP 1 [GameCode] 
-                        FROM   [Game] 
-                        WHERE  [Game] = @Game";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });
-
-                return (string)await command.ExecuteScalarAsync();
-            }
-        }
-
-        public async Task<string> GetGameCodeFromUserAsync(int user)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT [GameCode] 
-                        FROM   [Game] G 
-                               INNER JOIN [User] U 
-                                       ON U.[Game] = G.[Game] 
-                        WHERE  U.[User] = @User ";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-                return (string)await command.ExecuteScalarAsync();
-            }
-        }
-
         public async Task<int> GetGameFromCodeAsync(string gameCode)
         {
             using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
@@ -238,76 +203,21 @@ namespace Jeopardivity.Libraries
             }
         }
 
-        public async Task<int> GetGameFromUserAsync(int user)
+        public async Task MakeQuestionAnswerableAsync(int question)
         {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
+
+            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
             {
                 await connection.OpenAsync();
                 string sql = @"
-                        SELECT TOP 1 [Game] 
-                        FROM   [User] 
-                        WHERE  [User] = @User ";
+                        UPDATE [Question] 
+                        SET    [Answerable] = 1 
+                        WHERE  [Question] = @Question";
 
                 SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-                return (int)await command.ExecuteScalarAsync();
-            }
-        }
+                command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
 
-        public async Task<string> GetNameFromUserAsync(int user)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT TOP 1 [Name] 
-                        FROM   [User] 
-                        WHERE  [User] = @User";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-
-                return (string)await command.ExecuteScalarAsync();
-            }
-        }
-
-        public async Task<QuestionStatus> GetQuestionStatusFromGameAsync(int game)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        DECLARE @QuestionCount int = (SELECT Count(*) 
-                           FROM   [Question] 
-                           WHERE  [Game] = @Game) 
-                        DECLARE @CurrentQuestion int 
-
-                        IF @QuestionCount < 1 
-                          SET @CurrentQuestion = 0; 
-                        ELSE 
-                          SET @CurrentQuestion = (SELECT TOP 1 [Question] 
-                                                  FROM   [Question] 
-                                                  WHERE  [Game] = @Game 
-                                                  ORDER  BY [Started] DESC) 
-
-                        SELECT @CurrentQuestion        AS [CurrentQuestion], 
-                               (SELECT Count(*) 
-                                FROM   [Question] 
-                                WHERE  [Game] = @Game) AS [QuestionCount]";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });
-
-                SqlDataReader dataReader = await command.ExecuteReaderAsync();
-                QuestionStatus questionStatus = new QuestionStatus();
-
-                while (dataReader.Read())
-                {
-                    questionStatus.currentQuestion = Convert.ToInt32(dataReader["CurrentQuestion"]);
-                    questionStatus.questionCount = Convert.ToInt32(dataReader["QuestionCount"]);
-                }
-                return questionStatus;
-
+                await command.ExecuteNonQueryAsync();
             }
         }
 
