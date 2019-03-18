@@ -7,8 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
-using System.Data;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -24,30 +23,15 @@ namespace Jeopardivity.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             int user = data.User;
+
+            var helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
                        
-            var returnObject = new { Name = await GetNameFromUserAsync(user) };
+            var returnObject = new { Name = await helper.GetNameFromUserAsync(user) };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
-        }
-
-
-        private static async Task<string> GetNameFromUserAsync(int user)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT TOP 1 [Name] 
-                        FROM   [User] 
-                        WHERE  [User] = @User";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-
-                return (string)await command.ExecuteScalarAsync();
-            }
-
-
         }
 
     }

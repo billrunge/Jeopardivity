@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Data.SqlClient;
 using System.Data;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -29,55 +30,16 @@ namespace Jeopardivity.Functions
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             int user = data.User;
 
-            await GetQuestionStatusFromUserAsync(user);
+            var helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
 
-            var returnObject = new { Question = question, Answerable = answerable, UserBuzzed = userBuzzed };
+            Helper.QuestionStatus questionStatus = await helper.GetQuestionStatusFromUserAsync(user);
+
+            var returnObject = new { Question = questionStatus.question, Answerable = questionStatus.answerable, UserBuzzed = questionStatus.userBuzzed };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
-        }
-
-
-        private static async Task GetQuestionStatusFromUserAsync(int user)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT TOP 1 Q.[Question], 
-                                     Q.[Answerable], 
-                                     IIF((SELECT Count(*) 
-                                          FROM   [Buzz] 
-                                          WHERE  [User] = @User 
-                                                 AND [Question] = Q.Question) > 0, 1, 0) AS [UserBuzzed] 
-                        FROM   [Question] Q 
-                               INNER JOIN [Game] G 
-                                       ON Q.[Game] = G.[Game] 
-                               INNER JOIN [User] U 
-                                       ON U.[Game] = G.[Game] 
-                        WHERE  U.[User] = @User 
-                        ORDER  BY [Question] DESC";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-
-                SqlDataReader dataReader = await command.ExecuteReaderAsync();
-
-                if (dataReader.HasRows)
-                {
-                    while (dataReader.Read())
-                    {
-                        question = Convert.ToInt32(dataReader["Question"]);
-                        answerable = Convert.ToInt32(dataReader["Answerable"]) == 1 ? true : false ;
-                        userBuzzed = Convert.ToInt32(dataReader["UserBuzzed"]) == 1 ? true : false;
-                    }
-                }
-                else
-                {
-                    question = 0;
-                    answerable = false;
-                    userBuzzed = false;
-                }
-            }
         }
     }
 }

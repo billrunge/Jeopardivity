@@ -11,6 +11,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Net.Http;
 using System.Text;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -30,7 +31,15 @@ namespace Jeopardivity.Functions
             int user = data.User;
             int question = data.Question;
 
-            await BuzzAsync(user, question);
+            Helper helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
+
+            await helper.BuzzAsync(user, question);
+            int alex = await helper.GetAlexFromQuestionAsync(question);
+            string userName = await helper.GetUserNameFromUserAsync(user);
+            await SendMessageAsync(alex, userName);
 
             var returnObject = new { Success = true };
 
@@ -39,125 +48,15 @@ namespace Jeopardivity.Functions
             //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
 
-        public static async Task BuzzAsync(int user, int question)
+        private static async Task SendMessageAsync(int alex, string userName)
         {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        IF NOT EXISTS (SELECT TOP 1 [User] 
-                                       FROM   [Buzz] 
-                                       WHERE  [User] = @User 
-                                              AND [Question] = @Question) 
-                          BEGIN 
-                              INSERT INTO [Buzz] 
-                                          ([User],  
-                                           [Question]) 
-                              VALUES      (@User, 
-                                           @Question)
-                          END";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
-
-                await command.ExecuteNonQueryAsync();
-            }
-        }
-
-        //public static async Task<bool> IsUserWinner(int user, int question)
-        //{
-        //    using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-        //    {
-        //        await connection.OpenAsync();
-        //        string sql = @"
-        //                DECLARE @User int = (SELECT TOP 1 [User] 
-        //                   FROM   [Buzz] B 
-        //                          INNER JOIN [Question] Q 
-        //                                  ON B.[Question] = Q.[Question] 
-        //                   WHERE  Q.[Ended] IS NOT NULL 
-        //                          AND [Buzzed] > [Ended] 
-        //                          AND B.[Question] = @Question 
-        //                   ORDER  BY [Buzzed] ASC) 
-
-        //                IF ( @User IS NULL ) 
-        //                  BEGIN 
-        //                      SET @User = 0 
-        //                  END 
-
-        //                SELECT @User";
-
-
-        //        SqlCommand command = new SqlCommand(sql, connection);
-        //        command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
-
-        //        int winningUser = (int)await command.ExecuteScalarAsync();
-
-        //        return (winningUser == user) ? true : false;
-        //    }
-
-        //}
-
-
-
-        //private static async Task<string> GetGameCodeFromApiAsync(int game)
-        //{
-        //    string payload = @" {'Game':" + game + "}";
-
-        //    StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
-
-        //    HttpResponseMessage response = await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/GetCodeFromGame", content);
-
-        //    string responseString = await response.Content.ReadAsStringAsync();
-        //    dynamic data = JsonConvert.DeserializeObject(responseString);
-
-        //    return data.gameCode;
-        //}
-
-
-
-        public static async Task<int> GetAlexFromQuestionAsync(int question)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT U.[User] 
-                        FROM   [User] U 
-                               INNER JOIN [Question] Q 
-                                       ON U.[Game] = Q.[Game] 
-                        WHERE  U.[IsAlex] = 1 
-                               AND Q.[Question] = @Question";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Question", SqlDbType = SqlDbType.Int, Value = question });
-
-                return (int)await command.ExecuteScalarAsync();
-            }
-
-
-
-
-        }
-
-
-        private static async Task SendMessageAsync(int alex, int user)
-        {
-            string payload = @" {'UserID':'User" + Alex + "', 'Message':'Answerable' }";
+            string payload = @" {'UserID':'User" + alex + "', 'Message':'" + userName + "' }";
 
             StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
 
             await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/SendMessage", content);
 
         }
-
-
-
     }
-
-
-
-
-
 }
 

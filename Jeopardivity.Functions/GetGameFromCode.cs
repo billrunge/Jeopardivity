@@ -7,8 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
-using System.Data;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -28,32 +27,17 @@ namespace Jeopardivity.Functions
 
             string gameCode = data.GameCode;
 
-            int game = await GetGameFromCodeAsync(gameCode);
+            Helper helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
+
+            int game = await helper.GetGameFromCodeAsync(gameCode);
 
             var returnObject = new { Game = game };
             
             return (ActionResult)new OkObjectResult(returnObject);
                 //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
-        }
-
-
-        private static async Task<int> GetGameFromCodeAsync(string gameCode)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT TOP 1 [Game] 
-                        FROM   [Game] 
-                        WHERE  GameCode = @GameCode";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@GameCode", SqlDbType = SqlDbType.NVarChar, Value = gameCode });
-
-           
-
-                return (int)await command.ExecuteScalarAsync();
-            }
         }
     }
 }

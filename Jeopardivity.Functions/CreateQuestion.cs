@@ -7,10 +7,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
-using System.Data;
 using System.Net.Http;
 using System.Text;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -31,7 +30,11 @@ namespace Jeopardivity.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             game = data.Game;
-            question = await CreateQuestionAsync(game);
+            Helper helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
+            question = await helper.CreateQuestionAsync(game);
             await SendMessageAsync();
 
             var returnObject = new { Question = question };
@@ -39,30 +42,6 @@ namespace Jeopardivity.Functions
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
                 //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
-        }
-
-
-        public static async Task<int> CreateQuestionAsync(int game)
-        {
-
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        INSERT INTO [Question] 
-                                    ([Game], 
-                                     [Answerable]) 
-                        VALUES      (@Game, 
-                                     0)
-
-                        SELECT CAST(SCOPE_IDENTITY() AS INT)";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });
-
-                return (int)await command.ExecuteScalarAsync();
-
-            }
         }
 
         private static async Task SendMessageAsync()

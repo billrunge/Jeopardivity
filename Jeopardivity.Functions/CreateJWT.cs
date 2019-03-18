@@ -7,9 +7,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Text;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -29,39 +27,16 @@ namespace Jeopardivity.Functions
             string gameCode = data.GameCode;
             string userName = data.UserName;
             bool isAlex = data.IsAlex;
+            Helper helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
 
-            var returnObject = new { JWT = await GenerateJwtAsync(user, game, userName, gameCode, isAlex) };
+
+            var returnObject = new { JWT = await helper.GenerateJwtAsync(user, game, userName, gameCode, isAlex, Environment.GetEnvironmentVariable("JWT_KEY")) };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
                 //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
-        }
-
-
-        private static async Task<string> GenerateJwtAsync(int user, int game, string userName, string gameCode, bool isAlex)
-        {
-            SymmetricSecurityKey securityKey = 
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")));
-
-            SigningCredentials credentials = 
-                new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
-
-            JwtHeader header = new JwtHeader(credentials);
-
-            JwtPayload payload = new JwtPayload
-           {
-                {"User", user},
-                {"UserName", userName },
-                {"Game", game },
-                {"GameCode", gameCode },
-                {"IsAlex", isAlex }
-           };
-
-            JwtSecurityToken secToken = new JwtSecurityToken(header, payload);
-            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-
-            // Token to String so you can use it in your client
-            return await Task.Run(() => handler.WriteToken(secToken));           
-
-        }
+        } 
     }
 }

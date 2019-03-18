@@ -1,14 +1,13 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
+using System;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
-using System.Data;
+using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
@@ -26,8 +25,12 @@ namespace Jeopardivity.Functions
             dynamic data = JsonConvert.DeserializeObject(requestBody);
 
             int game = data.Game;
+            Helper helper = new Helper()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
 
-            string gameCode = await GetCodeFromGameAsync(game);
+            string gameCode = await helper.GetCodeFromGameAsync(game);
 
             var returnObject = new { GameCode = gameCode };
             
@@ -35,21 +38,5 @@ namespace Jeopardivity.Functions
                 //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
 
-        private static async Task<string> GetCodeFromGameAsync(int game)
-        {
-            using (SqlConnection connection = new SqlConnection() { ConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") })
-            {
-                await connection.OpenAsync();
-                string sql = @"
-                        SELECT TOP 1 [GameCode] 
-                        FROM   [Game] 
-                        WHERE  [Game] = @Game";
-
-                SqlCommand command = new SqlCommand(sql, connection);
-                command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });           
-
-                return (string)await command.ExecuteScalarAsync();
-            }
-        }
     }
 }

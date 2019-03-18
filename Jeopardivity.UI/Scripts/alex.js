@@ -77,6 +77,8 @@ $(document).ready(function () {
                     callback();
                 }
 
+                $("#buzzes").empty();
+
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to get question status</error-text>');
@@ -88,8 +90,9 @@ $(document).ready(function () {
     function connectionOns() {
         connection.on("User" + user, (message) => {
 
+            console.log(message);
 
-
+            $("#buzzes").append($("<li>").text(message));
 
         });
 
@@ -118,11 +121,11 @@ $(document).ready(function () {
             data: '{"Game":"' + game + '"}',
             dataType: "json",
             success: function (msg) {
-                resetStatus();
                 if (typeof callback === "function") {
                     // Call it, since we have confirmed it is callable
                     callback();
                 }
+                resetStatus();
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to create question</error-text>');
@@ -149,4 +152,6 @@ $(document).ready(function () {
         });
 
     }
+
+    return false;
 });
