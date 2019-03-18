@@ -24,8 +24,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Scripts\jwt-decode.js" />
-    <Content Include="Scripts\SRTest.js" />
-    <Content Include="SRTest.html" />
     <Content Include="creategame.html" />
     <Content Include="alex.html" />
     <Content Include="Content\bootstrap.css" />
