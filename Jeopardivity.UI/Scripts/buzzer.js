@@ -43,7 +43,7 @@ $(document).ready(function () {
             type: "POST",
             url: baseUrl + "/api/Buzz",
             contentType: "application/json; charset=utf-8",
-            data: '{"User":"' + user + '", "Question":"' + question + '" }',
+            data: '{ "JWT":"' + jwt + '" }',
             dataType: "json",
             success: function (msg) {
 

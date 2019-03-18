@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Jeopardivity.Libraries
@@ -72,20 +73,6 @@ namespace Jeopardivity.Libraries
 
                 return (string)await command.ExecuteScalarAsync();
             }
-        }
-
-        public string GenerateGameCode(int size)
-        {
-            Random rand = new Random();
-            string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            char[] chars = new char[size];
-
-            for (int i = 0; i < size; i++)
-            {
-                chars[i] = alphabet[rand.Next(alphabet.Length)];
-            }
-
-            return new string(chars);
         }
 
         public async Task<int> CreateGameAsync(string gameCode)
@@ -203,6 +190,23 @@ namespace Jeopardivity.Libraries
             }
         }
 
+        public async Task<int> GetGameFromUserAsync(int user)
+        {
+            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
+            {
+                await connection.OpenAsync();
+                string sql = @"
+                            SELECT [Game] 
+                            FROM   [User] 
+                            WHERE  [User] = @User";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.Add(new SqlParameter { ParameterName = "@User", SqlDbType = SqlDbType.Int, Value = user });
+
+                return (int)await command.ExecuteScalarAsync();
+            }
+        }
+
         public async Task MakeQuestionAnswerableAsync(int question)
         {
 
@@ -268,12 +272,31 @@ namespace Jeopardivity.Libraries
             }
         }
 
+        public string GenerateGameCode(int size)
+        {
+            Random rand = new Random();
+            string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            char[] chars = new char[size];
+
+            for (int i = 0; i < size; i++)
+            {
+                chars[i] = alphabet[rand.Next(alphabet.Length)];
+            }
+
+            return new string(chars);
+        }
+
+        public int GetUserFromJWT(string jwt)
+        {
+            var token = new JwtSecurityToken(jwtEncodedString: jwt);
+            return int.Parse(token.Claims.First(c => c.Type == "User").Value);
+        }   
+
         public struct QuestionStatus
         {
             public int currentQuestion, questionCount, question;
             public bool answerable, userBuzzed;
         }
-
 
     }
 }

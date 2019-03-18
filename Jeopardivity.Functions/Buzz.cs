@@ -7,8 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
-using System.Data;
 using System.Net.Http;
 using System.Text;
 using Jeopardivity.Libraries;
@@ -28,16 +26,20 @@ namespace Jeopardivity.Functions
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            int user = data.User;
-            int question = data.Question;
+
+            string jwt = data.JWT;
 
             Helper helper = new Helper()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
 
-            await helper.BuzzAsync(user, question);
-            int alex = await helper.GetAlexFromQuestionAsync(question);
+            int user = helper.GetUserFromJWT(jwt);
+            Helper.QuestionStatus questionStatus = await helper.GetQuestionStatusFromUserAsync(user);
+            log.LogInformation("Question = " + questionStatus.question);
+
+            await helper.BuzzAsync(user, questionStatus.question);
+            int alex = await helper.GetAlexFromQuestionAsync(questionStatus.question);
             string userName = await helper.GetUserNameFromUserAsync(user);
             await SendMessageAsync(alex, userName);
 
