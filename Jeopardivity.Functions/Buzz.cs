@@ -36,7 +36,6 @@ namespace Jeopardivity.Functions
 
             int user = helper.GetUserFromJWT(jwt);
             Helper.QuestionStatus questionStatus = await helper.GetQuestionStatusFromUserAsync(user);
-            log.LogInformation("Question = " + questionStatus.question);
 
             await helper.BuzzAsync(user, questionStatus.question);
             int alex = await helper.GetAlexFromQuestionAsync(questionStatus.question);

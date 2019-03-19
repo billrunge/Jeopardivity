@@ -23,15 +23,24 @@ namespace Jeopardivity.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
 
-            string name = data.Name;
-            int game = data.Game;
-            bool isAlex = data.IsAlex;
+            string userName = data.Name;
+            string gameCode = data.GameCode;
+
             Helper helper = new Helper()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
-            int user = await helper.CreateUserAsync(name, game, isAlex);
-            var returnObject = new { User = user };
+
+            int game = await helper.GetGameFromCodeAsync(gameCode);
+
+            string jwt = await helper.GenerateJwtAsync(await helper.CreateUserAsync(userName, game, false), 
+                        game, 
+                        userName, 
+                        gameCode, 
+                        false, 
+                        Environment.GetEnvironmentVariable("JWT_KEY"));
+
+            var returnObject = new { JWT = jwt };
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
 /*                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");*/
