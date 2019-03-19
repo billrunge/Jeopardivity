@@ -7,8 +7,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Data.SqlClient;
-using System.Data;
 using System.Net.Http;
 using System.Text;
 using Jeopardivity.Libraries;
@@ -35,12 +33,12 @@ namespace Jeopardivity.Functions
             question = data.Question;
             game = data.Game;
 
-            var helper = new Helper()
+            Question questionHelper = new Question()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
 
-            await helper.MakeQuestionAnswerableAsync(question);
+            await questionHelper.MakeQuestionAnswerableAsync(question);
             await SendMessageAsync();
 
             var returnObject = new { Status = "Question is now Answerable" };

@@ -29,17 +29,28 @@ namespace Jeopardivity.Functions
 
             string jwt = data.JWT;
 
-            Helper helper = new Helper()
+            Question questionHelper = new Question()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
 
-            int user = helper.GetUserFromJWT(jwt);
-            Helper.QuestionStatus questionStatus = await helper.GetQuestionStatusFromUserAsync(user);
+            User userHelper = new User()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
 
-            await helper.BuzzAsync(user, questionStatus.question);
-            int alex = await helper.GetAlexFromQuestionAsync(questionStatus.question);
-            string userName = await helper.GetUserNameFromUserAsync(user);
+            Libraries.Buzz buzzHelper = new Libraries.Buzz()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
+
+
+            int user = userHelper.GetUserFromJWT(jwt);
+            Question.QuestionStatus questionStatus = await questionHelper.GetQuestionStatusFromUserAsync(user);
+
+            await buzzHelper.BuzzAsync(user, questionStatus.question);
+            int alex = await userHelper.GetAlexFromQuestionAsync(questionStatus.question);
+            string userName = await userHelper.GetUserNameFromUserAsync(user);
             await SendMessageAsync(alex, userName);
 
             var returnObject = new { Success = true };

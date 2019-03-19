@@ -30,11 +30,13 @@ namespace Jeopardivity.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             game = data.Game;
-            Helper helper = new Helper()
+
+            Question questionHelper = new Question()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
-            question = await helper.CreateQuestionAsync(game);
+
+            question = await questionHelper.CreateQuestionAsync(game);
             await SendMessageAsync();
 
             var returnObject = new { Question = question };

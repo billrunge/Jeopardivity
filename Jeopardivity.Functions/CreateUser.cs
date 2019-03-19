@@ -26,14 +26,20 @@ namespace Jeopardivity.Functions
             string userName = data.Name;
             string gameCode = data.GameCode;
 
-            Helper helper = new Helper()
+            Game gameHelper = new Game()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
 
-            int game = await helper.GetGameFromCodeAsync(gameCode);
+            User userHelper = new User()
+            {
+                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
+            };
 
-            string jwt = await helper.GenerateJwtAsync(await helper.CreateUserAsync(userName, game, false), 
+            JWT jwtHelper = new JWT();
+            int game = await gameHelper.GetGameFromCodeAsync(gameCode);
+
+            string jwt = await jwtHelper.GenerateJwtAsync(await userHelper.CreateUserAsync(userName, game, false), 
                         game, 
                         userName, 
                         gameCode, 

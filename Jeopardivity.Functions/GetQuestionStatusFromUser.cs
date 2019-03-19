@@ -24,12 +24,12 @@ namespace Jeopardivity.Functions
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             int user = data.User;
 
-            var helper = new Helper()
+            Question questionHelper = new Question()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
 
-            Helper.QuestionStatus questionStatus = await helper.GetQuestionStatusFromUserAsync(user);
+            Question.QuestionStatus questionStatus = await questionHelper.GetQuestionStatusFromUserAsync(user);
 
             var returnObject = new { Question = questionStatus.question, Answerable = questionStatus.answerable, UserBuzzed = questionStatus.userBuzzed };
 
