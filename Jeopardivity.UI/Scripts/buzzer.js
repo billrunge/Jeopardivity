@@ -1,4 +1,4 @@
-﻿const baseUrl = "http://localhost:7071";
+﻿const baseUrl = "https://jeopardivity.azurewebsites.net";
 let jwt;
 let gameCode;
 let user;
@@ -12,12 +12,10 @@ $(document).ready(function () {
 
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(baseUrl + "/api")
-        .configureLogging(signalR.LogLevel.Information)
+        .configureLogging(signalR.LogLevel.Error)
         .build();
 
-    connection.start().then(function () {
-        console.log("connected");
-    });
+    connection.start();
 
 
     if (localStorage.getItem("JWT") === null) {
@@ -52,7 +50,7 @@ $(document).ready(function () {
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to buzz</error-text>');
-                return false;
+                console.log(error);
             }
         });
 
@@ -61,9 +59,9 @@ $(document).ready(function () {
     function resetStatus(callback) {
         $.ajax({
             type: "POST",
-            url: baseUrl + "/api/GetQuestionStatusFromUser",
+            url: baseUrl + "/api/GetQuestionStatus",
             contentType: "application/json; charset=utf-8",
-            data: '{"User":"' + user + '"}',
+            data: '{"JWT":"' + jwt + '"}',
             dataType: "json",
             success: function (msg) {
 
@@ -92,6 +90,7 @@ $(document).ready(function () {
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to get question status</error-text>');
+                console.log(error);
             }
         });
     }

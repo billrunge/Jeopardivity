@@ -6,7 +6,7 @@ let userName;
 let currentQuestion;
 let questionCount;
 let isAlex;
-const baseUrl = "http://localhost:7071";
+const baseUrl = "https://jeopardivity.azurewebsites.net";
 
 
 $(document).ready(function () {
@@ -24,7 +24,7 @@ $(document).ready(function () {
 
     const connection = new signalR.HubConnectionBuilder()
         .withUrl(baseUrl + "/api")
-        .configureLogging(signalR.LogLevel.Information)
+        .configureLogging(signalR.LogLevel.Error)
         .build();
 
     connection.start();
@@ -46,9 +46,9 @@ $(document).ready(function () {
     function resetStatus(callback) {
         $.ajax({
             type: "POST",
-            url: baseUrl + "/api/GetQuestionStatusFromUser",
+            url: baseUrl + "/api/GetQuestionStatus",
             contentType: "application/json; charset=utf-8",
-            data: '{"User":"' + user + '"}',
+            data: '{"JWT":"' + jwt + '"}',
             dataType: "json",
             success: function (msg) {
 
@@ -59,8 +59,6 @@ $(document).ready(function () {
                 if (question < 1) {
                     createQuestion();
                 }
-
-                console.log(msg);
 
                 if (answerable === true) {
                     $("#AllowBuzzes").prop("disabled", true);
@@ -82,6 +80,7 @@ $(document).ready(function () {
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to get question status</error-text>');
+                console.log(error);
             }
         });
     }
@@ -89,11 +88,7 @@ $(document).ready(function () {
 
     function connectionOns() {
         connection.on("User" + user, (message) => {
-
-            console.log(message);
-
             $("#buzzes").append($("<li>").text(message));
-
         });
 
     }
@@ -129,7 +124,7 @@ $(document).ready(function () {
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to create question</error-text>');
-                return false;
+                console.log(error);
             }
         });
     }
@@ -147,7 +142,7 @@ $(document).ready(function () {
             },
             error: function (req, status, error) {
                 $("h1").html('<error-text>Unable to begin next question</error-text>');
-                return false;
+                console.log(error);
             }
         });
 

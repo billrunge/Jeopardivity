@@ -11,25 +11,23 @@ using Jeopardivity.Libraries;
 
 namespace Jeopardivity.Functions
 {
-    public static class GetQuestionStatusFromUser
+    public static class GetQuestionStatus
     {
-        [FunctionName("GetQuestionStatusFromUser")]
+        [FunctionName("GetQuestionStatus")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            int user = data.User;
+            string jwt = data.JWT;
 
-            Question questionHelper = new Question()
-            {
-                SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
-            };
+            User userHelper = new User() { SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") };
+            Question questionHelper = new Question() { SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") };
 
-            Question.QuestionStatus questionStatus = await questionHelper.GetQuestionStatusFromUserAsync(user);
+            Question.QuestionStatus questionStatus = await questionHelper.GetQuestionStatusFromUserAsync(userHelper.GetUserFromJWT(jwt));
 
             var returnObject = new { Question = questionStatus.question, Answerable = questionStatus.answerable, UserBuzzed = questionStatus.userBuzzed };
 

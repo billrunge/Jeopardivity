@@ -1,7 +1,7 @@
 ﻿let game;
 let userName;
 let gameCode;
-let baseUrl = "http://localhost:7071";
+let baseUrl = "https://jeopardivity.azurewebsites.net";
 
 $(document).ready(function () {
 
@@ -20,8 +20,8 @@ $(document).ready(function () {
                 $(location).attr('href', './alex.html');
             },
             error: function (req, status, error) {
-                $("h1").html('<error-text>Unabled to generate JWT</error-text>');
-
+                $("h1").html('<error-text>Error when creating user</error-text>');
+                console.log(error);
             }
         });
 
