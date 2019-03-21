@@ -103,7 +103,6 @@ $(document).ready(function () {
         gameCode = json.GameCode;
         userName = json.UserName;
         game = json.Game;
-        console.log(json.User);
     }
 
 
