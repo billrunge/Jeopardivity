@@ -17,7 +17,8 @@ namespace Jeopardivity.Libraries
                 string sql = @"
                         SELECT TOP 1 [Game] 
                         FROM   [Game] 
-                        WHERE  GameCode = @GameCode";
+                        WHERE  GameCode = @GameCode 
+                        ORDER  BY [Game] DESC";
 
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.Parameters.Add(new SqlParameter { ParameterName = "@GameCode", SqlDbType = SqlDbType.NVarChar, Value = gameCode });
