@@ -4,6 +4,7 @@ let gameCode;
 let game;
 let userName;
 let currentQuestion;
+let buzzCount = 0;
 let questionCount;
 let isAlex;
 const baseUrl = "https://jeopardivity.azurewebsites.net";
@@ -32,12 +33,14 @@ $(document).ready(function () {
     resetStatus(connectionOns);
 
 
-    $("#AllowBuzzes").click(function () {
+    $("#AllowBuzzes").click(function (e) {
+        $("#AllowBuzzes").prop("disabled", true);
         makeQuestionAnswerable();
     });
 
 
     $("#NextQuestion").click(function (e) {
+        $("#NextQuestion").prop("disabled", true);
         createQuestion();
         resetStatus();
     });
@@ -76,6 +79,7 @@ $(document).ready(function () {
                 }
 
                 $("#buzzes").empty();
+                buzzCount = 0;
 
             },
             error: function (req, status, error) {
@@ -88,7 +92,8 @@ $(document).ready(function () {
 
     function connectionOns() {
         connection.on("User" + user, (message) => {
-            $("#buzzes").append($("<li>").text(message));
+            buzzCount++;
+            $("#buzzes").append($("<li>").text(buzzCount + ". " + message));
         });
 
     }

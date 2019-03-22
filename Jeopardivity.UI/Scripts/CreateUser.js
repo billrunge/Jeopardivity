@@ -4,6 +4,7 @@ $(document).ready(function () {
     let jwt;
 
     $("#SubmitButton").click(function (e) {
+        e.preventDefault();
         $.ajax({
             type: "POST",
             url: baseUrl + "/api/CreateUser",

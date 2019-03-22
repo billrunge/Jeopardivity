@@ -32,6 +32,7 @@ $(document).ready(function () {
     resetStatus(connectionOns);
 
     $("#Buzz").click(function (e) {
+        $("#Buzz").prop("disabled", true);
         buzz();
     });
 
