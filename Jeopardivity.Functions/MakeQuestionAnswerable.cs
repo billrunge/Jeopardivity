@@ -18,6 +18,7 @@ namespace Jeopardivity.Functions
         private static readonly HttpClient _client = new HttpClient();
         private static int game;
         private static int question;
+        private static string jwt;
 
 
 
@@ -30,13 +31,18 @@ namespace Jeopardivity.Functions
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            question = data.Question;
-            game = data.Game;
 
+            jwt = data.JWT;
+
+            JWT jwtHelper = new JWT();
             Question questionHelper = new Question()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
+
+            game = jwtHelper.GetGameFromJWT(jwt);
+
+            question = await questionHelper.GetQuestionFromGameAsync(game);
 
             await questionHelper.MakeQuestionAnswerableAsync(question);
             await SendMessageAsync();

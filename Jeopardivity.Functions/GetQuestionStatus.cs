@@ -26,8 +26,9 @@ namespace Jeopardivity.Functions
 
             User userHelper = new User() { SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") };
             Question questionHelper = new Question() { SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") };
+            JWT jwtHelper = new JWT();
 
-            Question.QuestionStatus questionStatus = await questionHelper.GetQuestionStatusFromUserAsync(userHelper.GetUserFromJWT(jwt));
+            Question.QuestionStatus questionStatus = await questionHelper.GetQuestionStatusFromUserAsync(jwtHelper.GetUserFromJWT(jwt));
 
             var returnObject = new { Question = questionStatus.question, Answerable = questionStatus.answerable, UserBuzzed = questionStatus.userBuzzed };
 

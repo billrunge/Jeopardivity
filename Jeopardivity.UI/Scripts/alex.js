@@ -117,7 +117,7 @@ $(document).ready(function () {
             type: "POST",
             url: baseUrl + "/api/CreateQuestion",
             contentType: "application/json; charset=utf-8",
-            data: '{"Game":"' + game + '"}',
+            data: '{"JWT":"' + jwt + '"}',
             dataType: "json",
             success: function (msg) {
                 if (typeof callback === "function") {
@@ -139,7 +139,7 @@ $(document).ready(function () {
             type: "POST",
             url: baseUrl + "/api/MakeQuestionAnswerable",
             contentType: "application/json; charset=utf-8",
-            data: '{"Question":"' + question + '", "Game":"' + game +'"}',
+            data: '{"JWT":"' + jwt + '"}',
             dataType: "json",
             success: function (msg) {
                 resetStatus();

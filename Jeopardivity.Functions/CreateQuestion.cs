@@ -19,6 +19,7 @@ namespace Jeopardivity.Functions
         private static readonly HttpClient _client = new HttpClient();
         private static int game;
         private static int question;
+        private static string jwt;
 
         [FunctionName("CreateQuestion")]
         public static async Task<IActionResult> Run(
@@ -29,7 +30,11 @@ namespace Jeopardivity.Functions
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            game = data.Game;
+            jwt = data.JWT;
+
+            JWT jwtHelper = new JWT();
+            game = jwtHelper.GetGameFromJWT(jwt);
+
 
             Question questionHelper = new Question()
             {
@@ -40,7 +45,6 @@ namespace Jeopardivity.Functions
             await SendMessageAsync();
 
             var returnObject = new { Question = question };
-
 
             return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
                 //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");

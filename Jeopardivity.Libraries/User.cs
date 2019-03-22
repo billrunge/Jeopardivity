@@ -35,12 +35,6 @@ namespace Jeopardivity.Libraries
             }
         }
 
-        public int GetUserFromJWT(string jwt)
-        {
-            var token = new JwtSecurityToken(jwtEncodedString: jwt);
-            return int.Parse(token.Claims.First(c => c.Type == "User").Value);
-        }
-
         public async Task<string> GetUserNameFromUserAsync(int user)
         {
             using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })

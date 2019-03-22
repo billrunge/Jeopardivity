@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Jeopardivity.Libraries
@@ -35,5 +36,19 @@ namespace Jeopardivity.Libraries
             return await Task.Run(() => handler.WriteToken(secToken));
 
         }
+
+
+        public int GetUserFromJWT(string jwt)
+        {
+            var token = new JwtSecurityToken(jwtEncodedString: jwt);
+            return int.Parse(token.Claims.First(c => c.Type == "User").Value);
+        }
+
+        public int GetGameFromJWT(string jwt)
+        {
+            var token = new JwtSecurityToken(jwtEncodedString: jwt);
+            return int.Parse(token.Claims.First(c => c.Type == "Game").Value);
+        }
+
     }
 }

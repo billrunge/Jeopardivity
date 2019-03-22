@@ -62,6 +62,28 @@ namespace Jeopardivity.Libraries
             }
         }
 
+
+        public async Task<int> GetQuestionFromGameAsync(int game)
+        {
+
+            using (SqlConnection connection = new SqlConnection() { ConnectionString = SqlConnectionString })
+            {
+                await connection.OpenAsync();
+                string sql = @"
+                        SELECT TOP 1 [Question] 
+                        FROM   [Question] 
+                        WHERE  [Game] = @Game 
+                        ORDER  BY [Question] DESC";
+
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.Add(new SqlParameter { ParameterName = "@Game", SqlDbType = SqlDbType.Int, Value = game });
+
+                return (int)await command.ExecuteScalarAsync();
+
+            }
+        }
+
+
         public async Task MakeQuestionAnswerableAsync(int question)
         {
 
