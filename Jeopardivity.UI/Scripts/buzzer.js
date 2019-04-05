@@ -1,5 +1,5 @@
-﻿//const baseUrl = "https://jeopardivity.azurewebsites.net";
-const baseUrl = "http://localhost:7071";
+﻿const baseUrl = "https://jeopardivity.azurewebsites.net";
+//const baseUrl = "http://localhost:7071";
 
 let jwt;
 let gameCode;
@@ -41,7 +41,7 @@ $(document).ready(function () {
     parseJwt(jwt);
 
     $("#TitleHeader").html('Jeopardivity');
-    $("#GameInfo").html('GAME CODE: ' + gameCode + '');
+    $("#GameInfo").html(gameCode);
 
     resetStatus(connectionOns);
 

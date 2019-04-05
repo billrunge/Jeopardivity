@@ -28,7 +28,6 @@
   <ItemGroup>
     <Content Include="buzzer.html" />
     <Content Include="Scripts\jwt-decode.js" />
-    <Content Include="creategame.html" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />

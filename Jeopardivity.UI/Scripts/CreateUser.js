@@ -1,5 +1,5 @@
-﻿//const baseUrl = "https://jeopardivity.azurewebsites.net";
-let baseUrl = "http://localhost:7071";
+﻿const baseUrl = "https://jeopardivity.azurewebsites.net";
+//let baseUrl = "http://localhost:7071";
 
 $(document).ready(function () {
     let jwt;

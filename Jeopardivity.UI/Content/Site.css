@@ -9,11 +9,6 @@
 }
 
 @font-face {
-    font-family: "HandwritingFont";
-    src: url("/fonts/Handwriting.woff2");
-}
-
-@font-face {
     font-family: "PriceFont";
     src: url("/fonts/Swiss911.ttf");
 }
@@ -92,14 +87,14 @@ li {
 
 #GameInfo {
     font-family: QuestionFont;
-    font-size: 28px;
+    font-size: 35px;
     color: #FFCC00;
     text-align: center;
     text-shadow: 2px 2px #000000;
 }
 
 #UserInfo {
-    font-family: HandwritingFont;
+    font-family: 'Over the Rainbow', cursive;
     font-size: 50px;
     color: white;
     text-align: center;
@@ -139,7 +134,7 @@ li {
     }
 
 .name-form {
-    font-family: HandwritingFont;
+    font-family: 'Over the Rainbow', cursive;
     margin: -4px;
     font-size: 50px;
     background-color: #060CE9;
