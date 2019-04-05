@@ -26,6 +26,8 @@ namespace Jeopardivity.Functions
             string userName = data.Name;
             string gameCode = data.GameCode;
 
+            gameCode = gameCode.ToUpper();
+
             Game gameHelper = new Game()
             {
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")

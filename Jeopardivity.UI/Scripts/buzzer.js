@@ -1,4 +1,6 @@
-﻿const baseUrl = "https://jeopardivity.azurewebsites.net";
+﻿//const baseUrl = "https://jeopardivity.azurewebsites.net";
+const baseUrl = "http://localhost:7071";
+
 let jwt;
 let gameCode;
 let user;
@@ -7,6 +9,18 @@ let userName;
 let question;
 let answerable;
 let userBuzzed;
+let buzzCount;
+let currentButtonMode;
+let isAlex;
+
+const buttonMode = {
+    ALLOW_BUZZES: 'ALLOW BUZZES',
+    NEXT_QUESTION: 'NEXT QUESTION',
+    BUZZ: 'BUZZ'
+
+}
+
+
 
 $(document).ready(function () {
 
@@ -26,14 +40,29 @@ $(document).ready(function () {
 
     parseJwt(jwt);
 
-    $("h1").html('Welcome to Jeopardivity, ' + userName + '!');
-    $("h2").html('Game Code: ' + gameCode + '');
+    $("#TitleHeader").html('Jeopardivity');
+    $("#GameInfo").html('GAME CODE: ' + gameCode + '');
 
     resetStatus(connectionOns);
 
-    $("#Buzz").click(function (e) {
-        $("#Buzz").prop("disabled", true);
-        buzz();
+    $("#DynamicButton").click(function (e) {
+
+        if (isAlex) {
+            $("#Buzzes").empty();
+            if (currentButtonMode === buttonMode.ALLOW_BUZZES) {
+                makeQuestionAnswerable();
+            } else
+                if (currentButtonMode === buttonMode.NEXT_QUESTION) {
+                    createQuestion();
+                }
+
+        } else {
+            currentButtonMode = buttonMode.BUZZ;
+            $("#DynamicButton").html(currentButtonMode);
+            $("#DynamicButton").prop("disabled", true);
+            buzz();
+        }
+
     });
 
     function buzz() {
@@ -70,18 +99,43 @@ $(document).ready(function () {
                 answerable = msg.Answerable;
                 userBuzzed = msg.UserBuzzed;
 
-                if (question < 1) {
-                    $("#Buzz").prop("disabled", true); 
-                }
+                buzzCount = 0;
 
-                if (answerable === true) {
-                    $("#Buzz").prop("disabled", false);
+                $("#UserInfo").html(userName);
+
+
+                if (isAlex) {
+                    if (question < 1) {
+                        createQuestion();
+                    }
+                    $("#DynamicButton").prop("disabled", false);
+                    if (answerable === true) {
+                        currentButtonMode = buttonMode.NEXT_QUESTION;
+                        $("#DynamicButton").html(currentButtonMode);
+                    }
+                    else {
+                        currentButtonMode = buttonMode.ALLOW_BUZZES;
+                        $("#DynamicButton").html(currentButtonMode);
+                    }
+
+
                 } else {
-                    $("#Buzz").prop("disabled", true);
-                }
+                    currentButtonMode = buttonMode.BUZZ;
+                    $("#DynamicButton").html(currentButtonMode);
+                    if (question < 1) {
+                        $("#DynamicButton").prop("disabled", true);
+                    }
 
-                if (userBuzzed === true) {
-                    $("#Buzz").prop("disabled", true);
+                    if (answerable === true) {
+                        $("#DynamicButton").prop("disabled", false);
+                    } else {
+                        $("#DynamicButton").prop("disabled", true);
+                    }
+
+                    if (userBuzzed === true) {
+                        $("#DynamicButton").prop("disabled", true);
+                    }
+
                 }
 
                 if (typeof callback === "function") {
@@ -97,18 +151,73 @@ $(document).ready(function () {
     }
 
     function connectionOns() {
+        if (isAlex) {
+            connection.on("User" + user, (message) => {
+                if (buzzCount == 0) {
+                    $("#Buzzes").append($('<li class="winning-buzz">').text(decodeURIComponent(message.toUpperCase())));
+                } else {
+                    $("#Buzzes").append($('<li class="losing-buzz">').text(decodeURIComponent(message.toUpperCase())));
+                }
+                buzzCount++;
+            });
+        } else {
+            connection.on("Game" + game, (message) => {
 
-        connection.on("Game" + game, (message) => {
+                if (message == "NewQuestion") {
+                    resetStatus();
+                }
 
-            if (message == "NewQuestion") {
+                if (message == "Answerable") {
+
+                    resetStatus();
+                }
+
+            });
+        }
+    }
+
+    function makeQuestionAnswerable(callback) {
+
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/api/MakeQuestionAnswerable",
+            contentType: "application/json; charset=utf-8",
+            data: '{"JWT":"' + jwt + '"}',
+            dataType: "json",
+            success: function (msg) {
+                if (typeof callback === "function") {
+                    // Call it, since we have confirmed it is callable
+                    callback();
+                }
+
                 resetStatus();
+            },
+            error: function (req, status, error) {
+                $("h1").html('<error-text>Unable to begin next question</error-text>');
+                console.log(error);
             }
+        });
 
-            if (message == "Answerable") {
-               
+    }
+
+    function createQuestion(callback) {
+        $.ajax({
+            type: "POST",
+            url: baseUrl + "/api/CreateQuestion",
+            contentType: "application/json; charset=utf-8",
+            data: '{"JWT":"' + jwt + '"}',
+            dataType: "json",
+            success: function (msg) {
+                if (typeof callback === "function") {
+                    // Call it, since we have confirmed it is callable
+                    callback();
+                }
                 resetStatus();
+            },
+            error: function (req, status, error) {
+                $("h1").html('<error-text>Unable to create question</error-text>');
+                console.log(error);
             }
-
         });
     }
 
@@ -119,9 +228,9 @@ $(document).ready(function () {
 
         user = json.User;
         gameCode = json.GameCode;
-        userName = json.UserName;
+        userName = decodeURIComponent(json.UserName);
         game = json.Game;
-        console.log(json.User);
+        isAlex = json.IsAlex;
     }
 
 });

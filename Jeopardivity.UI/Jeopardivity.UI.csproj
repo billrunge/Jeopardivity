@@ -26,9 +26,9 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="buzzer.html" />
     <Content Include="Scripts\jwt-decode.js" />
     <Content Include="creategame.html" />
-    <Content Include="alex.html" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
@@ -37,8 +37,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="buzzer.html" />
-    <Content Include="Scripts\alex.js" />
     <Content Include="Scripts\buzzer.js" />
     <Content Include="Scripts\creategame.js" />
     <Content Include="Scripts\createuser.js" />

@@ -1,15 +1,16 @@
-﻿const baseUrl = "https://jeopardivity.azurewebsites.net";
+﻿//const baseUrl = "https://jeopardivity.azurewebsites.net";
+let baseUrl = "http://localhost:7071";
 
 $(document).ready(function () {
     let jwt;
 
-    $("#SubmitButton").click(function (e) {
+    $("#JoinGame").click(function (e) {
         e.preventDefault();
         $.ajax({
             type: "POST",
             url: baseUrl + "/api/CreateUser",
             contentType: "application/json; charset=utf-8",
-            data: '{"GameCode":"' + $("#GameCode").val() + '", "Name":"' + $("#UserName").val() + '"}',
+            data: '{"GameCode":"' + $("#GameCode").val().trim() + '", "Name":"' + encodeURIComponent($("#UserName").val()) + '"}',
             dataType: "json",
             success: function (msg) {
                 jwt = msg.JWT;
