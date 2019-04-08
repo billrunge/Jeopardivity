@@ -1,15 +1,15 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using Jeopardivity.Libraries;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
-using Jeopardivity.Libraries;
+using System.Threading.Tasks;
 
 namespace Jeopardivity.Functions
 {
@@ -58,16 +58,14 @@ namespace Jeopardivity.Functions
             var returnObject = new { Success = true };
 
 
-            return (ActionResult)new OkObjectResult(JsonConvert.SerializeObject(returnObject));
+            return new OkObjectResult(JsonConvert.SerializeObject(returnObject));
             //: new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
 
         private static async Task SendMessageAsync(int alex, string userName)
         {
-            string payload = @" {'UserID':'User" + alex + "', 'Message':'" + userName + "' }";
-
-            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
-
+            StringContent content = new StringContent(JsonConvert.SerializeObject(
+                new { UserID = "User" + alex, Message = userName }), Encoding.UTF8, "application/json");
             await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/SendMessage", content);
 
         }

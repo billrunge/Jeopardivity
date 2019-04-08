@@ -54,9 +54,10 @@ namespace Jeopardivity.Functions
 
         private static async Task SendMessageAsync()
         {
-            string payload = @" {'UserID':'Game" + game + "', 'Message':'Answerable' }";
+            //string payload = @" {'UserID':'Game" + game + "', 'Message':'Answerable' }";
 
-            StringContent content = new StringContent(payload, Encoding.UTF8, "application/json");
+            StringContent content = new StringContent(JsonConvert.SerializeObject(
+                new { UserID = $"Game{game}", Message = "Answerable" }), Encoding.UTF8, "application/json");
 
             await _client.PostAsync($"{Environment.GetEnvironmentVariable("BASE_URL")}/api/SendMessage", content);
         }
