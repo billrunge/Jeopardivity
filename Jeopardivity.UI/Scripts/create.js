@@ -14,9 +14,10 @@ $(document).ready(function () {
     currentButtonMode = buttonMode.CREATE_GAME;
 
     $("#CreateButton").html(currentButtonMode);
-    
+
 
     $("#CreateButton").click(function (e) {
+        $("#ErrorArea").html("");
         e.preventDefault();
 
         if (currentButtonMode == buttonMode.CREATE_GAME) {
@@ -40,41 +41,58 @@ $(document).ready(function () {
     });
 
     function joinGame() {
-        $.ajax({
-            type: "POST",
-            url: baseUrl + "/api/CreateUser",
-            contentType: "application/json; charset=utf-8",
-            data: "{ " + `"GameCode":"${$("#GameCode").val().trim()}", "Name":"${encodeURIComponent($("#UserName").val())}"` + " }",
-            dataType: "json",
-            success: function (msg) {
-                jwt = msg.JWT;
-                localStorage.JWT = jwt;
-                $(location).attr('href', './buzzer.html');
+        let gameCode = $("#GameCode").val().trim();
+        let userName = encodeURIComponent($("#UserName").val());
 
-            },
-            error: function (req, status, error) {
-                $("#ErrorArea").html(`<error-text>SOMETHING BAD HAPPENED</error-text>`);
-                console.log(error);
-            }
-        });
+
+        if (gameCode.length != 5) {
+            $("#ErrorArea").html(`INVALID GAME CODE`);
+
+        } else if (userName.length < 1) {
+            $("#ErrorArea").html(`PLEASE ENTER NAME`);
+        } else {
+            $.ajax({
+                type: "POST",
+                url: baseUrl + "/api/CreateUser",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ GameCode: gameCode, Name: userName}),
+                dataType: "json",
+                success: function (msg) {
+                    jwt = msg.JWT;
+                    localStorage.JWT = jwt;
+                    $(location).attr('href', './buzzer.html');
+
+                },
+                error: function (req, status, error) {
+                    $("#ErrorArea").html(`SOMETHING BAD HAPPENED`);
+                    console.log(error);
+                }
+            });
+        }
     }
 
     function createGame() {
-        $.ajax({
-            type: "POST",
-            url: `${baseUrl}/api/CreateGame`,
-            contentType: "application/json; charset=utf-8",
-            data: "{ " + `"Name":"${encodeURIComponent($("#UserName").val())}"` + " }",
-            dataType: "json",
-            success: function (msg) {
-                jwt = msg.JWT;
-                localStorage.JWT = jwt;
-                $(location).attr('href', './buzzer.html');
-            },
-            error: function (req, status, error) {
-                $("#ErrorArea").html(`<error-text>SOMETHING BAD HAPPENED</error-text>`);
-                console.log(error);
-            }
-        });
+        let userName = encodeURIComponent($("#UserName").val());
+
+        if (userName.length < 1) {
+            $("#ErrorArea").html(`PLEASE ENTER NAME`);
+        } else {
+            $.ajax({
+                type: "POST",
+                url: `${baseUrl}/api/CreateGame`,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ Name: encodeURIComponent($("#UserName").val())}),
+                dataType: "json",
+                success: function (msg) {
+                    jwt = msg.JWT;
+                    localStorage.JWT = jwt;
+                    $(location).attr('href', './buzzer.html');
+                },
+                error: function (req, status, error) {
+                    $("#ErrorArea").html(`SOMETHING BAD HAPPENED`);
+                    console.log(error);
+                }
+            });
+        }
     }
 });

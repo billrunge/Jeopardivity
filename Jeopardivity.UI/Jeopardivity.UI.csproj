@@ -39,6 +39,10 @@
     <Content Include="Scripts\signalr.js" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="fonts\CoffeeScript.ttf" />
     <None Include="fonts\gyparody.ttf" />
     <None Include="fonts\Handwriting.woff2" />
