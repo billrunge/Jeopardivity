@@ -54,8 +54,6 @@ namespace Jeopardivity.Functions
 
         private static async Task SendMessageAsync()
         {
-            //string payload = @" {'UserID':'Game" + game + "', 'Message':'Answerable' }";
-
             StringContent content = new StringContent(JsonConvert.SerializeObject(
                 new { UserID = $"Game{game}", Message = "Answerable" }), Encoding.UTF8, "application/json");
 
