@@ -18,7 +18,6 @@
     src: url("/fonts/CoffeeScript.ttf");
 }
 
-
 body {
     height: 100%;
     background-color: #115FF4;
@@ -35,46 +34,30 @@ error-text {
     padding-right: 15px;
 }
 
-
-
-
-
-.losing-buzz {
+.buzz {
     margin: -4px;
-    width: 300px;
+    width: 280px;
     border: solid;
     border-color: black;
     border-width: 4px;
     background-color: #060CE9;
+    font-size: 30px;
+    text-align: center;
+    font-family: QuestionFont;
+    text-shadow: 2px 2px #000000;
+}
+
+.losing {
     color: white;
-    font-size: 30px;
-    text-align: center;
-    font-family: QuestionFont;
-    text-shadow: 2px 2px #000000;
 }
 
-.winning-buzz {
+.winning {
     color: #FFCC00;
-    margin: -4px;
-    width: 300px;
-    border: solid;
-    border-color: black;
-    border-width: 4px;
-    background-color: #060CE9;
-    font-size: 30px;
-    text-align: center;
-    font-family: QuestionFont;
-    text-shadow: 2px 2px #000000;
 }
-
-
-
-
 
 li {
     display: inline-block;
 }
-
 
 #TitleHeader {
     line-height: 95%;
@@ -105,63 +88,38 @@ li {
     padding: 0px;
 }
 
-.gamecode-form {
+.input-form {
+    margin: -4px;
+    background-color: #060CE9;
+    color: white;
+    border: solid;
+    border-width: 4px;
+    border-color: black;
+    width: 300px;
+    height: 150px;
+    white-space: normal;
+    text-align: center;
+}
+
+.input-form::placeholder {
+    font-family: PriceFont;
+    color: white;
+    font-size: 50px;
+    text-align: center;
+    vertical-align: text-top;
+    line-height: 90%;
+    text-overflow: clip;
+}
+
+.gamecode {
     font-family: JeopardyLogo;
-    margin: -4px;
     font-size: 50px;
-    background-color: #060CE9;
-    color: white;
-    border: solid;
-    border-width: 4px;
-    border-color: black;
-    width: 300px;
-    height: 180px;
-    white-space: normal;
-    text-align: center;
-    /*text-shadow: 2px 2px #000000;*/
-    /*box-shadow: 4px 4px #000000;*/
 }
 
-    .gamecode-form::placeholder {
-        font-family: PriceFont;
-        color: white;
-        font-size: 50px;
-        text-align: center;
-        vertical-align: text-top;
-        line-height: 90%;
-        text-overflow: clip;
-        /*white-space: normal;*/
-    }
-
-.name-form {
+.user-name {
     font-family: 'Over the Rainbow', cursive;
-    margin: -4px;
     font-size: 50px;
-    background-color: #060CE9;
-    color: white;
-    border: solid;
-    border-width: 4px;
-    border-color: black;
-    width: 300px;
-    height: 180px;
-    white-space: normal;
-    text-align: center;
-    /*text-shadow: 2px 2px #000000;*/
-    /*box-shadow: 4px 4px #000000;*/
 }
-
-    .name-form::placeholder {
-        font-family: PriceFont;
-        color: white;
-        font-size: 50px;
-        text-align: center;
-        white-space: normal;
-        line-height: 90%;
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-
 
 .submit-button {
     line-height: 95%;
@@ -180,6 +138,22 @@ li {
     font-family: QuestionFont;
 }
 
+.create-button {
+    line-height: 95%;
+    background-color: #060CE9;
+    color: #FFCC00;
+    font-size: 22px;
+    text-align: center;
+    font-family: QuestionFont;
+    border: solid;
+    border-width: 4px;
+    border-color: black;
+    text-shadow: 2px 2px #000000;
+    width: 300px;
+    height: 150px;
+    font-size: 50px;
+}
+
 #BottomPageLink {
     font-family: PriceFont;
     color: white;
@@ -188,8 +162,8 @@ li {
 .dynamic-button {
     padding-bottom: 20px;
     font-family: PriceFont;
-    width: 300px;
-    height: 300px;
+    width: 280px;
+    height: 280px;
     line-height: 90%;
     border: solid;
     border-color: black;
@@ -213,21 +187,5 @@ li {
 
 
 
-/*ul {
-    list-style-type: none;
-}*/
 
 
-
-
-
-/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-    .jumbotron {
-        margin-top: 20px;
-    }
-
-    .body-content {
-        padding: 0;
-    }
-}

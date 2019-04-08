@@ -31,10 +31,13 @@ namespace Jeopardivity.Functions
                 SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING")
             };
 
+            Database database = new Database() { SqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTION_STRING") };
+
             JWT jwtHelper = new JWT();
 
+            string userName = data.Name;
 
-            string userName = data.UserName;
+            await database.CreateSchemaAsync();
 
             string gameCode = gameHelper.GenerateGameCode(5);
             int game = await gameHelper.CreateGameAsync(gameCode);

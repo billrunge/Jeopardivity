@@ -31,21 +31,19 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Scripts\buzzer.js" />
-    <Content Include="Scripts\creategame.js" />
-    <Content Include="Scripts\createuser.js" />
-    <Content Include="Scripts\scrolling-nav.js" />
+    <Content Include="Scripts\create.js" />
     <Content Include="index.html" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\signalr.js" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="fonts\CoffeeScript.ttf" />
+    <None Include="fonts\gyparody.ttf" />
+    <None Include="fonts\Handwriting.woff2" />
+    <None Include="fonts\KorinnaBold.ttf" />
+    <None Include="fonts\Swiss911.ttf" />
     <None Include="function.json" />
     <None Include="package.json" />
   </ItemGroup>

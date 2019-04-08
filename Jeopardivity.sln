@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jeopardivity.Functions", "J
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jeopardivity.UI", "Jeopardivity.UI\Jeopardivity.UI.csproj", "{4C1CDE14-C049-41E3-998E-0484F23F6C6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jeopardivity.Libraries", "Jeopardivity.Libraries\Jeopardivity.Libraries.csproj", "{07E1BFAB-F075-4937-865D-81F05C625AE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jeopardivity.Libraries", "Jeopardivity.Libraries\Jeopardivity.Libraries.csproj", "{07E1BFAB-F075-4937-865D-81F05C625AE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

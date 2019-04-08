@@ -39,6 +39,7 @@ namespace Jeopardivity.Functions
             };
 
             JWT jwtHelper = new JWT();
+
             int game = await gameHelper.GetGameFromCodeAsync(gameCode);
 
             string jwt = await jwtHelper.GenerateJwtAsync(await userHelper.CreateUserAsync(userName, game, false), 

@@ -17,10 +17,7 @@ const buttonMode = {
     ALLOW_BUZZES: 'ALLOW BUZZES',
     NEXT_QUESTION: 'NEXT QUESTION',
     BUZZ: 'BUZZ'
-
 }
-
-
 
 $(document).ready(function () {
 
@@ -154,9 +151,9 @@ $(document).ready(function () {
         if (isAlex) {
             connection.on("User" + user, (message) => {
                 if (buzzCount == 0) {
-                    $("#Buzzes").append($('<li class="winning-buzz">').text(decodeURIComponent(message.toUpperCase())));
+                    $("#Buzzes").append($('<li class="buzz winning">').text(decodeURIComponent(message.toUpperCase())));
                 } else {
-                    $("#Buzzes").append($('<li class="losing-buzz">').text(decodeURIComponent(message.toUpperCase())));
+                    $("#Buzzes").append($('<li class="buzz losing">').text(decodeURIComponent(message.toUpperCase())));
                 }
                 buzzCount++;
             });
@@ -222,7 +219,6 @@ $(document).ready(function () {
     }
 
     function parseJwt(token) {
-
 
         let json = jwt_decode(token);
 

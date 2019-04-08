@@ -21,21 +21,18 @@
 
         <div id="TitleHeader">Welcome to Jeopardivity!</div>
         <br />
+        <div id="ErrorArea"></div>
         <form>
-            <input type="text" class="name-form" id="UserName" placeholder="NAME">
-            <br />
-            <input type="text" class="gamecode-form" id="GameCode" placeholder="GAME CODE">
-            <br />
-            <br />
-            <button type="submit" id="JoinGame" class="submit-button">JOIN GAME</button>
-            <button type="submit" id="CreateGame" class="submit-button">CREATE GAME</button>
+            <input type="text" class="user-name input-form" id="UserName" placeholder="NAME">
+            <input type="text" class="gamecode input-form" id="GameCode" placeholder="GAME CODE">
+            <button type="submit" id="CreateButton" class="create-button"></button>
+
         </form>
     </div>
 
     <script src="Scripts/jquery-3.3.1.js"></script>
     <script src="Scripts/bootstrap.js"></script>
-    <script src="Scripts/createuser.js"></script>
-    <script src="Scripts/creategame.js"></script>
+    <script src="Scripts/create.js"></script>
 
 </body>
 
